@@ -106,7 +106,7 @@ irrklang::ISound* AudioManager::play3D(std::string musicFile, glm::vec3 position
 void AudioManager::updateAudioListener()
 {
 	irrklang::vec3df position = glmVec3toIrrklang(Game::players[0]->getPosition());
-	irrklang::vec3df lookAt = glmVec3toIrrklang(Game::players[0]->getLookDirection());
+	irrklang::vec3df lookAt = glmVec3toIrrklang(Game::players[0]->getVecFront());
 
 	lookAt.X = -lookAt.X;
 	lookAt.Z = -lookAt.Z;

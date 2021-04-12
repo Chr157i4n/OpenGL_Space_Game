@@ -7,7 +7,7 @@ NPC::NPC(Shader* shader) : Character(shader)
 {
 	currentTask = CurrentTask::Idle;
 	setType(ObjectType::Object_NPC | ObjectType::Object_Character);
-	lookDirection = glm::vec3(1, 0, 1);
+	vecFront = glm::vec3(1, 0, 1);
 	float npc_speed_mult = ConfigManager::bot_speed_mult;
 	forwardSpeed = forwardSpeed * npc_speed_mult;
 	backwardSidewaySpeed = backwardSidewaySpeed * npc_speed_mult;
@@ -29,20 +29,20 @@ void NPC::followCharacter(std::shared_ptr <Character> character)
 	glm::vec3 myPosition = position;
 	glm::vec3 targetPosition = character->getPosition();
 
-	lookDirection = targetPosition - myPosition;		//aim at the target
+	vecFront = targetPosition - myPosition;		//aim at the target
 
 	float distance = glm::length(this->getPosition() - character->getPosition());
 	float maxDistance = 30;
 
 	if (distance < maxDistance)
 	{
-		lookDirection.y += (0.00015 * Game::getDelta() * pow(distance,2));		//aim a little bit higher, when the enemy is more far away
+		vecFront.y += (0.00015 * Game::getDelta() * pow(distance,2));		//aim a little bit higher, when the enemy is more far away
 	}
 
-	lookDirection = glm::normalize(lookDirection);
+	vecFront = glm::normalize(getVecFront());
 
-	float pitch = glm::degrees(asin(-lookDirection.y));
-	float yaw = glm::degrees(atan2(lookDirection.x, lookDirection.z));
+	float pitch = glm::degrees(asin(-vecFront.y));
+	float yaw = glm::degrees(atan2(vecFront.x, vecFront.z));
 	setRotation(glm::vec3(0, yaw, 0));
 
 	if (distance < maxDistance)
@@ -62,11 +62,11 @@ void NPC::followNavPoints()
 	glm::vec3 myPosition = position;
 	glm::vec3 targetPosition = navPoints[currentNavPoint];
 
-	lookDirection = targetPosition - myPosition;
-	lookDirection = glm::normalize(lookDirection);
+	vecFront = targetPosition - myPosition;
+	vecFront = glm::normalize(vecFront);
 
-	float pitch = glm::degrees(asin(-lookDirection.y));
-	float yaw = glm::degrees(atan2(lookDirection.x, lookDirection.z));
+	float pitch = glm::degrees(asin(-vecFront.y));
+	float yaw = glm::degrees(atan2(vecFront.x, vecFront.z));
 	setRotation(glm::vec3(0, yaw, 0));
 
 	float distance = glm::length(targetPosition - myPosition);
@@ -138,7 +138,9 @@ void NPC::evade(CollisionResult collisionResult)
 		if (collidedObject->object->getDimensions().y < 3.5)
 		{
 			jump();
+			#ifdef DEBUG_MOVEMENT
 			Logger::log("NPC: " + printObject() + " wants to jump");
+			#endif
 		}
 		else
 		{
@@ -158,7 +160,7 @@ void NPC::reactToCollision(CollisionResult collisionResult)
 }
 
 void NPC::calculateNextTarget()
-{
+{	
 	std::shared_ptr<Character> nextTarget = nullptr;
 	float nextTargetdistance= (std::numeric_limits<float>::max)();
 

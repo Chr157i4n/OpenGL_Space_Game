@@ -82,7 +82,7 @@ float calcShadows(vec3 position_light_space)
 {
     shadow = 0.0;
     //float bias = 0.0002;
-    float bias = max(0.00001 * (1.0 - dot(normal, u_directional_light.direction)), 0.0003);  
+    float bias = max(0.00001 * (1.0 - dot(normal, u_directional_light.direction)), 0.006);  
 
     if(u_shadow_mode == 0)  //off
     {

@@ -5,20 +5,21 @@
 #include "libs/glm/ext/matrix_transform.hpp"
 #include "libs/glm/gtc/matrix_transform.hpp"
 
-#include "FPSCamera.h"
+#include "Camera_FPS.h"
+#include "Camera_ThirdPerson.h"
 #include "UI_Element_ProgressBar.h"
 #include "Character.h"
 
-class Player : public Character, public FPSCamera
+class Player : public Character, public ThirdPersonCamera
 {
 
 public:
 
 	Player(Shader* shader, float fov, float width, float height);
 
-	glm::vec3 getLookDirection();
+	//glm::vec3 getLookDirection();
 
-	virtual glm::vec3 getLookOrigin();
+	//virtual glm::vec3 getLookOrigin();
 
 	void onMouseMove(float xRel, float yRel);
 
@@ -33,6 +34,10 @@ public:
 	void toggleFlashlight();
 
 	void registerHit();
+
+	void rollLeft();
+
+	void rollRight();
 
 	virtual void reactToCollision(CollisionResult collisionResult);
 
@@ -49,7 +54,7 @@ private:
 	bool flashlightActive = false;
 	UI_Element_ProgressBar* healthBar;
 
-	glm::vec3 cameraOffset = glm::vec3(0, 2.8, 0);
+	glm::vec3 cameraOffset = glm::vec3(0, 0, 0);
 	
 
 

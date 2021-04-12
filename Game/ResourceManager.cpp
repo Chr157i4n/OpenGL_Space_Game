@@ -189,7 +189,7 @@ void ResourceManager::loadMap(std::string mapFileName)
 
 	if (!mapNode)
 	{
-		Logger::log("Map file has now 'map' Node.");
+		Logger::log("Map file has no 'map' Node.");
 		return;
 	}
 
@@ -329,6 +329,12 @@ void ResourceManager::loadMapProperties(tinyxml2::XMLElement* xmlNode)
 	if (xmlNodeSub)
 	{
 		Map::skyboxName = xmlNodeSub->GetText();
+	}
+
+	xmlNodeSub = xmlNode->FirstChildElement("gravity");
+	if (xmlNodeSub)
+	{
+		Map::gravity *= std::stof(xmlNodeSub->GetText());
 	}
 }
 

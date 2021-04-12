@@ -16,8 +16,8 @@ struct PointLight {
 	glm::vec3 color = glm::vec3(0, 0, 0);
 	int colorUniformIndex = -1;
 
-	float linear = 0.1;
-	float quadratic = 0.01;
+	float linear = 0.1f;
+	float quadratic = 0.01f;
 
 	bool active = true;
 };
@@ -64,6 +64,7 @@ public:
 	static glm::vec3 sun_direction;
 	static glm::vec3 sun_color;
 	static std::string skyboxName;
+	static glm::vec3 gravity;
 
 	static std::vector<PointLight> pointLights;
 
@@ -74,7 +75,7 @@ private:
 	static std::string mapFileFolder;
 	static std::string mapFileExtension;
 
-	static glm::vec3 gravity;
+	
 
 	static glm::vec2 mapSize;
 

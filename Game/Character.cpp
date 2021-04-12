@@ -1,28 +1,62 @@
 #include "Character.h"
+
 #include "Game.h"
+#include "Raypicker.h"
 
 #include <cmath>
 
 Character::Character(Shader* shader) : Object(shader, "character.bmf")
 {
 	this->shader = shader;
-	lookDirection = glm::vec3(1.0f, 0.0f, 0.0f);
-	up = glm::vec3(0.0f, 1.0f, 0.0f);
+	vecFront = glm::vec3(1.0f, 0.0f, 0.0f);
+	vecUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	vecRight = glm::vec3(0.0f, 0.0f, 1.0f);
 	this->name = "Character";
 	this->setType(ObjectType::Object_Character);
 	this->setCollisionBoxType(CollisionBoxType::cube);
 }
 
-glm::vec3 Character::getLookDirection()
+glm::vec3 Character::getVecFront()
 {
-	return lookDirection;
+	return vecFront;
 }
 
-glm::vec3 Character::getLookOrigin()
+glm::vec3 Character::getVecFrontOrigin()
 {
 	glm::vec3 lookOrigin = this->getPosition();
 	lookOrigin.y += this->getDimensions().y * 0.75;
 	return lookOrigin;
+}
+
+glm::vec3 Character::getVecUp()
+{
+	return vecUp;
+}
+
+void Character::calculateFrontandUpVector()
+{
+	//vecFront.x = cos(glm::radians(cha_pitch)) * cos(glm::radians(cha_yaw));
+	//vecFront.y = sin(glm::radians(cha_pitch));
+	//vecFront.z = cos(glm::radians(cha_pitch)) * sin(glm::radians(cha_yaw));
+	//vecFront = glm::normalize(glm::rotate(rotationQuat, glm::vec3(1.0f, 0.0f, 0.0f)));
+
+	//vecUp = glm::normalize(glm::rotate(rotationQuat, vecUp));
+
+	//vecRight = glm::normalize(glm::rotate(rotationQuat, vecRight));
+
+	//vecUp = glm::vec3(0,1,0);
+	//glm::mat4 roll_mat = glm::rotate(glm::mat4(1.0f), glm::radians(cha_roll), vecFront);
+	//vecUp = glm::mat3(roll_mat) * vecUp;
+
+	//vecRight = glm::cross(vecFront, vecUp);
+	////vecUp = glm::cross(vecRight, vecFront);
+
+	glm::vec3 vecFrontLocal = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 vecUpLocal = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 vecRightLocal = glm::vec3(1.0f, 0.0f, 0.0f);
+	vecFront = glm::normalize(glm::rotate(rotationQuat, vecFrontLocal));
+	vecUp = glm::normalize(glm::rotate(rotationQuat, vecUpLocal));
+	vecRight = glm::normalize(glm::rotate(rotationQuat, vecRightLocal));
 }
 
 void Character::interactWithObject()
@@ -39,42 +73,76 @@ void Character::interactWithObject()
 
 void Character::resetVerticalMovement()
 {
-	movement = movement * glm::vec3(0, 1, 0);
+	movement = movement * glm::vec3(0, 0, 0);
 }
 
 void Character::moveForward() {
-	glm::vec3 v = glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * getLookDirection()) * forwardSpeed;// *Game::getDelta() / 1000.0f;
+	glm::vec3 v = /*glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * */ getVecFront()/*)*/ * forwardSpeed;// *Game::getDelta() / 1000.0f;
 
-	movement.x += v.x;
-	movement.z += v.z;
+	movement += v;
 }
 
 void Character::moveBackward() {
-	glm::vec3 v = glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * getLookDirection()) * -backwardSidewaySpeed;// *Game::getDelta() / 1000.0f;
+	glm::vec3 v = /*glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * */ getVecFront()/*)*/ * -backwardSidewaySpeed;// *Game::getDelta() / 1000.0f;
 
-	movement.x += v.x;
-	movement.z += v.z;
+	movement += v;
 }
 
 void Character::moveRight() {
-	glm::vec3 v = glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * glm::cross(getLookDirection(), up)) * backwardSidewaySpeed;// *Game::getDelta() / 1000.0f;
+	glm::mat4 roll_mat = glm::rotate(glm::mat4(1.0f), glm::radians(cha_roll), getVecFront());
+	glm::vec3 up2 = glm::mat3(roll_mat) * getVecUp();
+	
+	glm::vec3 v = /*glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * */ glm::cross(getVecFront(), up2)/*)*/ * backwardSidewaySpeed;// *Game::getDelta() / 1000.0f;
 
-	movement.x += v.x;
-	movement.z += v.z;
+	movement += v;
 }
 
 void Character::moveLeft() {
-	glm::vec3 v = glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * glm::cross(getLookDirection(), up)) * -backwardSidewaySpeed; //* Game::getDelta() / 1000.0f;
+	glm::mat4 roll_mat = glm::rotate(glm::mat4(1.0f), glm::radians(cha_roll), getVecFront());
+	glm::vec3 up2 = glm::mat3(roll_mat) * getVecUp();
 
-	movement.x += v.x;
-	movement.z += v.z;
+	glm::vec3 v = /*glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * */ glm::cross(getVecFront(), up2)/*)*/ * -backwardSidewaySpeed; //* Game::getDelta() / 1000.0f;
+
+	movement += v;
+}
+
+void Character::rollLeft()
+{
+	float32 v = rollSpeed;
+	
+	cha_roll += v;
+
+	glm::quat qRoll = glm::angleAxis(glm::radians(-rollSpeed), glm::vec3(0, 0, 1));
+
+	rotationQuat = rotationQuat * qRoll;
+	setRotationQuat(rotationQuat);
+
+	calculateFrontandUpVector();
+	
+}
+
+void Character::rollRight()
+{
+	float32 v = -rollSpeed;
+
+	cha_roll += v;
+
+	glm::quat qRoll = glm::angleAxis(glm::radians(rollSpeed), glm::vec3(0, 0, 1));
+
+	rotationQuat = rotationQuat * qRoll;
+	setRotationQuat(rotationQuat);
+
+	calculateFrontandUpVector();
+	
 }
 
 void Character::jump()
 {
 	if (canJump)
 	{
+#ifdef DEBUG_MOVEMENT
 		Logger::log("Character: " + printObject() + " jumped");
+#endif
 
 		AudioManager::play3D("audio/jump.wav", this->getPosition());
 
@@ -122,41 +190,16 @@ void Character::run(bool run)
 
 std::shared_ptr<Object> Character::calculateObjectLookingAt()
 {
-	std::vector< std::shared_ptr<Object> > objectsLookingAt;
-	
-	for (std::shared_ptr<Object> object : Game::objects)
-	{
-		if (object->getType() & ObjectType::Object_Player) continue;
-		if (object->getType() & ObjectType::Object_Environment) continue;
-		if (!object->getEnabled()) continue;
+	glm::vec3 rayOrigin = this->getVecFrontOrigin();
+	glm::vec3 rayDirection = this->getVecFront();
 
-		glm::vec3 rayOrigin = this->getLookOrigin();
+	RayPickingResult raypickingresult = Raypicker::doRayPicking(Ray(rayOrigin, rayDirection), Game::objects);
 
-		glm::vec3 rayDirection = this->getLookDirection();
-
-		if (object->intersectWithRay(rayOrigin, rayDirection))
-		{
-			objectsLookingAt.push_back(object);
-		}
-	}
-
-	//return the object with the minimum distance
-	float minDistance = (std::numeric_limits<float>::max)();
-	float currentDistance = 0;
-	std::shared_ptr<Object> objectMinDistance = nullptr;
-
-	for (std::shared_ptr<Object> object : objectsLookingAt)
-	{
-		currentDistance = this->getDistance(object);
-		if (currentDistance < minDistance)
-		{
-			minDistance = currentDistance;
-			objectMinDistance = object;
-		}
-	}
-
-	ObjectLookingAt = objectMinDistance;
-	return objectMinDistance;
+#ifdef DEBUG_RAYPICKING
+	Logger::log(this->printObject()+" is looking at "+ raypickingresult.intersectedObject_nearest.object->printObject());
+#endif
+	objectLookingAt = raypickingresult.intersectedObject_nearest.object;
+	return raypickingresult.intersectedObject_nearest.object;
 }
 
 /// <summary>
@@ -178,9 +221,9 @@ std::shared_ptr<Bullet> Character::shoot()
 	std::chrono::duration<double, std::milli> notshotDuration = now - lastTimeShot;
 	if (notshotDuration.count() > 1000)
 	{
-		glm::vec3 bulletCreationPosition = position + glm::vec3(0, 2, 0) +glm::vec3(1, 1, 1) * getLookDirection();
+		glm::vec3 bulletCreationPosition = position + glm::vec3(0, 2, 0) +glm::vec3(1, 1, 1) * getVecFront();
 		glm::vec3 bulletCreationRotation = glm::vec3(0, rotation.y - 90 + scatteringAngleY, -rotation.x - 90 + scatteringAngleX);
-		glm::vec3 bulletCreationDirection = getLookDirection();
+		glm::vec3 bulletCreationDirection = getVecFront();
 		
 		//rotate direction around Y
 		bulletCreationDirection = glm::rotate(bulletCreationDirection, glm::radians(scatteringAngleY), glm::vec3(0, 1, 0));
@@ -194,6 +237,7 @@ std::shared_ptr<Bullet> Character::shoot()
 
 		Game::bullets.push_back(newBullet);
 		Game::objects.push_back(newBullet);
+		newBullet->calculationBeforeFrame();
 
 
 		lastTimeShot = std::chrono::system_clock::now();

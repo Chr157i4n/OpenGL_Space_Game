@@ -156,7 +156,7 @@ void NetworkManager::sendPlayerPosition()
 void NetworkManager::sendPlayerRotation()
 {
 	NetworkManager::sendData(NetworkCommand::change_rotation_player, NetworkManager::glmVec3_to_string(Game::players[0]->getRotation()));
-	NetworkManager::sendData(NetworkCommand::change_lookdirection_player, NetworkManager::glmVec3_to_string(Game::players[0]->getLookDirection()));
+	NetworkManager::sendData(NetworkCommand::change_lookdirection_player, NetworkManager::glmVec3_to_string(Game::players[0]->getVecFront()));
 }
 
 void NetworkManager::sendShoot()
@@ -201,7 +201,7 @@ void NetworkManager::parseData(std::string data)
 		{
 			Logger::log("Server changes map: "+param_string);
 			Map::load(param_string);
-			Game::startGame();
+			Game::startGame(Game_Mode::GameMode_MultiPlayer);
 			sendPlayerPosition();
 			sendPlayerRotation();
 			break;

@@ -114,15 +114,15 @@ void UI::updateRot(std::shared_ptr<Player> object)
 	std::string text;
 	std::stringstream xss, yss, zss;
 
-	xss << std::fixed << std::setprecision(precision) << object->getLookDirection().x;
+	xss << std::fixed << std::setprecision(precision) << object->getVecFront().x;
 	text = xss.str();
 	rotLabel[1]->setText(text);
 
-	yss << std::fixed << std::setprecision(precision) << object->getLookDirection().y;
+	yss << std::fixed << std::setprecision(precision) << object->getVecFront().y;
 	text = yss.str();
 	rotLabel[2]->setText(text);
 
-	zss << std::fixed << std::setprecision(precision) << object->getLookDirection().z;
+	zss << std::fixed << std::setprecision(precision) << object->getVecFront().z;
 	text = zss.str();
 	rotLabel[3]->setText(text);
 }

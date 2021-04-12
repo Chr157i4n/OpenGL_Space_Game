@@ -4,7 +4,7 @@
 #include "Bullet.h"
 #include "Shader.h"
 
-Player::Player(Shader* shader, float fov, float width, float height) : Character(shader), FPSCamera(fov, width, height)
+Player::Player(Shader* shader, float fov, float width, float height) : Character(shader), ThirdPersonCamera(fov, width, height)
 {
 	setType(ObjectType::Object_Player | ObjectType::Object_Character);
 	
@@ -13,43 +13,105 @@ Player::Player(Shader* shader, float fov, float width, float height) : Character
 	position.y = 0;
 	position.z = 0;
 
-	cameraposition = position + cameraOffset;
+	//cameraposition = position + cameraOffset;
+	vecFront = glm::vec3(0,0,1);
+	lookAt = glm::vec3(0, 0, 1);
+	cameraposition = glm::vec3(110, 10, -60);
 
 	this->name = "Player";
 
 	createHealthbar();
 }
 
-glm::vec3 Player::getLookDirection()
-{
-	return lookAt;
-}
+//glm::vec3 Player::getLookDirection()
+//{
+//	return lookAt;
+//}
 
-glm::vec3 Player::getLookOrigin()
-{
-	return this->getCameraPosition();
-}
+//glm::vec3 Player::getLookOrigin()
+//{
+//	return this->getCameraPosition();
+//}
 
 void Player::onMouseMove(float xRel, float yRel)
 {
-	onMouseMoved(xRel, yRel);
-	setRotation(glm::vec3(0, -yaw + 90, 0));
+	//cha_yaw += xRel * mouseSensitivity * cos(glm::radians(cha_roll));  //0° roll
+	//cha_yaw -= yRel * mouseSensitivity * sin(glm::radians(cha_roll));  //90° roll
+
+	//cha_pitch += yRel * mouseSensitivity * cos(glm::radians(cha_roll));  //0° roll
+	//cha_pitch -= xRel * mouseSensitivity * sin(glm::radians(cha_roll));  //90° roll
+
+
+	//if (cha_pitch > 60)
+	//	cha_pitch = 60;
+	//if (cha_pitch < -60)
+	//	cha_pitch = -60;
+
+	////Logger::log("rot: (" + std::to_string(cha_pitch) + "|" + std::to_string(cha_yaw) + "|" + std::to_string(cha_roll) + ")");
+
+	//cam_yaw = cha_yaw;
+	//cam_pitch = cha_pitch;
+	//cam_roll = cha_roll;
+	//lookAt = vecFront;
+
+	//setRotation(glm::vec3(cha_pitch, -cha_yaw-90, cha_roll));
+
+
+
+	//float x = 0, y = 0, z = 0;
+
+	//x = cha_pitch;
+	//y = -cha_yaw-90;
+	//z = -cha_roll;
+
+	//glm::vec3 EulerAngles = glm::vec3(glm::radians(x), glm::radians(y), glm::radians(-z));
+
+	//setRotationQuat(EulerAngles);
+
+	Logger::log("vecRight: ("+std::to_string(vecRight.x)+"|" + std::to_string(vecRight.y) + "|" + std::to_string(vecRight.z) + ")");
+	//Logger::log("quat: (" + std::to_string(rotationQuat.x) + "|" + std::to_string(rotationQuat.y) + "|" + std::to_string(rotationQuat.z) + "|" + std::to_string(rotationQuat.w) + ")");
+
+
+
+	glm::quat qPitch = glm::angleAxis(glm::radians(yRel * mouseSensitivity), glm::vec3(1, 0, 0));
+	glm::quat qYaw = glm::angleAxis(glm::radians(-xRel * mouseSensitivity), glm::vec3(0, 1, 0));
+	// omit roll
+	rotationQuat = rotationQuat * qPitch * qYaw;
+
+	glm::vec3 vecFrontLocal = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 vecUpLocal = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 vecRightLocal = glm::vec3(1.0f, 0.0f, 0.0f);
+	vecFront = glm::normalize(glm::rotate(rotationQuat, vecFrontLocal));
+	vecUp = glm::normalize(glm::rotate(rotationQuat, vecUpLocal));
+	vecRight = glm::normalize(glm::rotate(rotationQuat, vecRightLocal));
+
+
+	//rotationQuat = glm::rotate(rotationQuat, glm::radians(yRel * mouseSensitivity), vecRight);
+	//rotationQuat = glm::rotate(rotationQuat, glm::radians(-xRel * mouseSensitivity), vecUp);
+
+	setRotationQuat(rotationQuat);
+	
+
+
+
+	//onMouseMoved();
+
+	//calculateFrontandUpVector();
+	lookAt = vecFront;
+	updateCameraPosition();
 }
 
 void Player::updateCameraPosition()
 {
-	cameraposition.x = position.x;
-	cameraposition.z = position.z;
+	cameraposition = position - getVecFront() * camera_distancetoPlayer;
+	cameraposition += getVecUp() * glm::vec3(2);
 
-	if (isCrouched)
-	{
-		cameraposition.y = position.y + cameraOffset.y * 0.6;
-	}
-	else {
-		cameraposition.y = position.y + cameraOffset.y * 1;
-	}
 
-	update();
+	//cameraposition = position + cameraOffset;
+	cam_roll = cha_roll;
+
+	lookAt = vecFront;
+	update2(vecUp);
 }
 
 glm::vec3 Player::getCameraPosition()
@@ -107,6 +169,18 @@ void Player::registerHit()
 {
 	addToHealth(-20);
 	healthBar->setValue(health);
+}
+
+void Player::rollLeft()
+{
+	Character::rollLeft();
+	updateCameraPosition();
+}
+
+void Player::rollRight()
+{
+	Character::rollRight();
+	updateCameraPosition();
 }
 
 void Player::reactToCollision(CollisionResult collisionResult)

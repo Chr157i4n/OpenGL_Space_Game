@@ -14,9 +14,13 @@ class Character : public Object
 public:
 	Character(Shader* shader);
 
-	virtual glm::vec3 getLookDirection();
+	virtual glm::vec3 getVecFront();
 
-	virtual glm::vec3 getLookOrigin();
+	virtual glm::vec3 getVecFrontOrigin();
+
+	glm::vec3 getVecUp();
+
+	void calculateFrontandUpVector();
 
 	virtual void interactWithObject();
 
@@ -30,6 +34,10 @@ public:
 
 	void moveLeft();
 
+	void rollLeft();
+
+	void rollRight();
+
 	void jump();
 
 	void activateJumping();
@@ -40,7 +48,7 @@ public:
 
 	std::shared_ptr<Object> getObjectLookingAt()
 	{
-		return ObjectLookingAt;
+		return objectLookingAt;
 	}
 
 	std::shared_ptr<Object> calculateObjectLookingAt();
@@ -60,27 +68,35 @@ public:
 		team = newTeam;
 	}
 
+
+public:
+	float cha_roll = 0, cha_yaw = 0, cha_pitch = 0;
+
 protected:
 
 	bool isCrouched = false;
 	bool isRunning = false;
 	bool canJump = true;
 
-	glm::vec3 lookDirection;
+	glm::vec3 vecFront;
+	glm::vec3 vecUp;
+	glm::vec3 vecRight;
+	
 
 
 	float32 forwardSpeed = 10;				//per second
 	float32 backwardSidewaySpeed = 5;		//per second
 	float32 upwardSpeed = 0;				//per second
+	float32 rollSpeed = 0.1f;
 
 	const float32 heigth = 4;
 
 	std::chrono::system_clock::time_point lastTimeShot = std::chrono::system_clock::now() - std::chrono::hours(1);
 
-	glm::vec3 up;
+	
 
 	int team = 0;
 
-	std::shared_ptr<Object> ObjectLookingAt;
+	std::shared_ptr<Object> objectLookingAt;
 };
 

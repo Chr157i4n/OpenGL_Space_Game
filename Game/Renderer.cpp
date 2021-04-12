@@ -964,7 +964,7 @@ void Renderer::renderObjects(bool transparent)
 		if (!object->getEnabled()) continue;
 		if (transparent && !object->getModel()->getHasTransparentTexture()) continue;
 		if (!transparent && object->getModel()->getHasTransparentTexture()) continue;
-		if (object->getType() & ObjectType::Object_Player) continue;
+		//if (object->getType() & ObjectType::Object_Player) continue;
 
 
 		if (ConfigManager::env_map_render_interval != 0)
@@ -1001,20 +1001,35 @@ void Renderer::renderObjects(bool transparent)
 		glm::mat4 model = glm::mat4(1.0f);
 		//model = glm::scale(model, glm::vec3(1.0f));
 
+		if (object->getType() & ObjectType::Object_Player) 
+		{
+			//Logger::log("test");
+		}
+
 		//move to position of model
 		model = glm::translate(model, object->getPosition());
 
-		//rotate model around X
-		float angle = object->getRotation().x;
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(1, 0, 0));
+		//float x = 0, y = 0, z = 0;
 
-		//rotate model around Y
-		angle = object->getRotation().y;
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
+		//if (object->getType() & ObjectType::Object_Player)
+		//{
+		//	Character* character = static_cast<Character*>(object.get());
+		//	x = character->cha_pitch;
+		//	y = -character->cha_yaw-90;
+		//	z = -character->cha_roll;
+		//}
+		//
+		////model = model * rotationMatrix;
+		//glm::vec3 EulerAngles = glm::vec3(glm::radians(x), glm::radians(y), glm::radians(-z));
 
-		//rotate model around z
-		angle = object->getRotation().z;
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 0, 1));
+		//glm::quat myQuat = glm::quat(EulerAngles);
+
+		//glm::mat4 rotationMatrix = glm::toMat4(myQuat);
+
+		//model = model * rotationMatrix;
+
+		model = model * object->getRotationMat();
+		
 
 		//view and projection
 		modelViewProj = Game::players[0]->getViewProj() * model;

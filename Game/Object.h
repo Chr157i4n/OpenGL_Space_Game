@@ -7,6 +7,8 @@
 #include "libs/glm/ext/matrix_transform.hpp"
 #include "libs/glm/gtc/matrix_transform.hpp"
 #include "libs/glm/gtx/rotate_vector.hpp"
+#include "libs/glm/gtx/quaternion.hpp"
+#include "libs/glm/gtc/quaternion.hpp"
 #include <algorithm>
 #include <memory>
 #include <chrono>
@@ -15,6 +17,9 @@
 #include "Model.h"
 
 
+//forward declaration
+class Object;
+struct Ray;
 
 /// <summary>
 /// enum for different type of an object. It is used as flags, so the Player, has the flag "Object_Player" and "Object_Character".
@@ -72,8 +77,6 @@ std::unordered_map<std::string, CollisionBoxType> const CollisionBoxTypeTable =
 	{"prism",CollisionBoxType::prism},
 };
 
-//forward declaration of the class Object
-class Object;
 
 /// <summary>
 /// struct for each object the object collided
@@ -97,6 +100,11 @@ struct CollisionResult
 };
 
 
+struct Box {
+	float minX, maxX, minY, maxY, minZ, maxZ;
+};
+
+
 /// <summary>
 /// Base class for every object in the game world
 /// </summary>
@@ -113,9 +121,11 @@ public:
 
 	void unbindShader();
 
-	bool  intersectWithRay(glm::vec3 rayOrigin, glm::vec3 rayDirection);
+	bool  intersectWithRay(Ray ray);
 
 	float getDistance(std::shared_ptr<Object> object);
+
+	float getDistance(glm::vec3 location);
 
 	void markObject();
 
@@ -143,6 +153,11 @@ public:
 
 	std::vector<glm::vec2> calculateRectPoints();
 
+	std::vector<glm::vec3> getCollisionPoints()
+	{
+		return cubePoints;
+	}
+
 	std::vector<glm::vec3> calculateCollisionPoints();
 
 	std::vector<glm::vec3> calculateCollisionNormals();
@@ -167,6 +182,29 @@ public:
 
 	glm::vec3 getRotation();
 
+	void setRotationQuat(glm::vec3 EulerAngles) {
+		glm::quat newRotationQuat = glm::quat(EulerAngles);
+		setRotationQuat(newRotationQuat);
+	}
+
+	void setRotationQuat(glm::quat newRotationQuat) {
+		rotationQuat = newRotationQuat;
+		rotationMat = glm::toMat4(rotationQuat);
+	}
+
+	glm::quat getRotationQuat() {
+		return rotationQuat;
+	}
+
+	glm::mat4 getRotationMat() {
+		return rotationMat;
+	}
+
+	glm::mat4 calcRotationMat() {
+		rotationMat = glm::toMat4(rotationQuat);
+		return rotationMat;
+	}
+
 	glm::vec3 getCenter()
 	{
 		return center;
@@ -183,6 +221,11 @@ public:
 	glm::vec3 getDimensions();
 
 	glm::vec3 getBoundingBoxDimensions();
+
+	Box getOrientedBoundingBox()
+	{
+		return orientedBoundingBox;
+	}
 
 	void setType(ObjectType newObjectType);
 
@@ -322,7 +365,7 @@ protected:
 
 	glm::vec3 position;						//x, y, z
 	glm::vec3 center;						//x, y, z
-	glm::vec3 rotation;						//yaw, pitch, roll	
+	glm::vec3 rotation;						//yaw, pitch, roll
 	glm::vec3 scale;
 	glm::vec3 movement;						//x, y, z
 	glm::vec3 dimensions;					//x, y, z
@@ -332,9 +375,15 @@ protected:
 	std::vector<glm::vec3> cubePoints;
 	std::vector<glm::vec3> cubeNormals;
 
+	Box orientedBoundingBox;
+
 	int modelIndex = -1;
 	Shader* shader = nullptr;
 	Model* model = nullptr;
+
+	glm::quat rotationQuat;
+	glm::mat4 rotationMat;
+
 	ObjectType type;
 	CollisionBoxType collisionBoxType;
 	std::string name = "";
