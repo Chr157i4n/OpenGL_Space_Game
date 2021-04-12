@@ -25,6 +25,8 @@ public:
 
 	void updateCameraPosition();
 
+	void resetCameraPosition();
+
 	glm::vec3 getCameraPosition();
 
 	void setCameraPosition(glm::vec3 newPosition);

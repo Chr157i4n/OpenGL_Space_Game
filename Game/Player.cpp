@@ -13,77 +13,42 @@ Player::Player(Shader* shader, float fov, float width, float height) : Character
 	position.y = 0;
 	position.z = 0;
 
-	//cameraposition = position + cameraOffset;
-	vecFront = glm::vec3(0,0,1);
-	lookAt = glm::vec3(0, 0, 1);
-	cameraposition = glm::vec3(110, 10, -60);
+	setRotationQuat(rotationQuat);
+	calculateFrontandUpVector();
+	lookAt = vecFront;
+	resetCameraPosition();
 
 	this->name = "Player";
 
 	createHealthbar();
 }
 
-//glm::vec3 Player::getLookDirection()
-//{
-//	return lookAt;
-//}
-
-//glm::vec3 Player::getLookOrigin()
-//{
-//	return this->getCameraPosition();
-//}
 
 void Player::onMouseMove(float xRel, float yRel)
 {
-	//cha_yaw += xRel * mouseSensitivity * cos(glm::radians(cha_roll));  //0° roll
-	//cha_yaw -= yRel * mouseSensitivity * sin(glm::radians(cha_roll));  //90° roll
 
-	//cha_pitch += yRel * mouseSensitivity * cos(glm::radians(cha_roll));  //0° roll
-	//cha_pitch -= xRel * mouseSensitivity * sin(glm::radians(cha_roll));  //90° roll
-
-
-	//if (cha_pitch > 60)
-	//	cha_pitch = 60;
-	//if (cha_pitch < -60)
-	//	cha_pitch = -60;
-
-	////Logger::log("rot: (" + std::to_string(cha_pitch) + "|" + std::to_string(cha_yaw) + "|" + std::to_string(cha_roll) + ")");
-
-	//cam_yaw = cha_yaw;
-	//cam_pitch = cha_pitch;
-	//cam_roll = cha_roll;
-	//lookAt = vecFront;
-
-	//setRotation(glm::vec3(cha_pitch, -cha_yaw-90, cha_roll));
-
-
-
-	//float x = 0, y = 0, z = 0;
-
-	//x = cha_pitch;
-	//y = -cha_yaw-90;
-	//z = -cha_roll;
-
-	//glm::vec3 EulerAngles = glm::vec3(glm::radians(x), glm::radians(y), glm::radians(-z));
-
-	//setRotationQuat(EulerAngles);
-
-	Logger::log("vecRight: ("+std::to_string(vecRight.x)+"|" + std::to_string(vecRight.y) + "|" + std::to_string(vecRight.z) + ")");
+	//Logger::log("vecRight: ("+std::to_string(vecRight.x)+"|" + std::to_string(vecRight.y) + "|" + std::to_string(vecRight.z) + ")");
 	//Logger::log("quat: (" + std::to_string(rotationQuat.x) + "|" + std::to_string(rotationQuat.y) + "|" + std::to_string(rotationQuat.z) + "|" + std::to_string(rotationQuat.w) + ")");
+	
+	float maxPitch=0.003f;
+	float maxYaw = 0.003f;
+
+	float anglePitch = glm::radians(yRel * mouseSensitivity);
+	float angleYaw = glm::radians(-xRel * mouseSensitivity);
+	anglePitch = std::min(anglePitch, maxPitch);
+	angleYaw = std::min(angleYaw, maxYaw);
+	anglePitch = std::max(anglePitch, -maxPitch);
+	angleYaw = std::max(angleYaw, -maxYaw);
 
 
+	Logger::log("Pitch: "+std::to_string(anglePitch)+"\tYaw: "+ std::to_string(angleYaw));
 
-	glm::quat qPitch = glm::angleAxis(glm::radians(yRel * mouseSensitivity), glm::vec3(1, 0, 0));
-	glm::quat qYaw = glm::angleAxis(glm::radians(-xRel * mouseSensitivity), glm::vec3(0, 1, 0));
+	glm::quat qPitch = glm::angleAxis(anglePitch, glm::vec3(1, 0, 0));
+	glm::quat qYaw = glm::angleAxis(angleYaw, glm::vec3(0, 1, 0));
 	// omit roll
 	rotationQuat = rotationQuat * qPitch * qYaw;
 
-	glm::vec3 vecFrontLocal = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 vecUpLocal = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::vec3 vecRightLocal = glm::vec3(1.0f, 0.0f, 0.0f);
-	vecFront = glm::normalize(glm::rotate(rotationQuat, vecFrontLocal));
-	vecUp = glm::normalize(glm::rotate(rotationQuat, vecUpLocal));
-	vecRight = glm::normalize(glm::rotate(rotationQuat, vecRightLocal));
+	calculateFrontandUpVector();
 
 
 	//rotationQuat = glm::rotate(rotationQuat, glm::radians(yRel * mouseSensitivity), vecRight);
@@ -103,16 +68,36 @@ void Player::onMouseMove(float xRel, float yRel)
 
 void Player::updateCameraPosition()
 {
-	cameraposition = position - getVecFront() * camera_distancetoPlayer;
-	cameraposition += getVecUp() * glm::vec3(2);
+	float cameraspeed = 0.015;
 
+	glm::vec3 cameratargetposition = position - getVecFront() * camera_distancetoPlayer;
+	cameratargetposition += getVecUp() * glm::vec3(2);
 
-	//cameraposition = position + cameraOffset;
-	cam_roll = cha_roll;
+	glm::vec3 cameramovedirection = cameratargetposition - cameraposition;
+	float cameratargetdistance = glm::length(cameramovedirection);
+	cameramovedirection = glm::normalize(cameramovedirection);
+
+	if (cameratargetdistance > cameraspeed) {
+		cameraposition += cameramovedirection * glm::vec3(cameraspeed);
+	}
+	else {
+		cameraposition = cameratargetposition;
+	}
 
 	lookAt = vecFront;
 	update2(vecUp);
 }
+
+void Player::resetCameraPosition()
+{
+	cameraposition = position - getVecFront() * camera_distancetoPlayer;
+	cameraposition += getVecUp() * glm::vec3(2);
+
+	lookAt = vecFront;
+	update2(vecUp);
+}
+
+
 
 glm::vec3 Player::getCameraPosition()
 {

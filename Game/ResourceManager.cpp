@@ -352,6 +352,7 @@ void ResourceManager::loadPlayer(tinyxml2::XMLElement* xmlNode)
 		if (xmlNodeSub)
 		{
 			player->setPosition(Helper::string_to_glmVec3(xmlNodeSub->GetText()));
+			player->resetCameraPosition();
 		}
 	}
 

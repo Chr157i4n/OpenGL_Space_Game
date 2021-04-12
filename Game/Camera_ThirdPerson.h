@@ -10,8 +10,6 @@ public:
 
     ThirdPersonCamera(float fov, float width, float height);
 
-    void onMouseMoved();
-
     void update() override;
 
     void update2(glm::vec3 up_);
@@ -23,7 +21,6 @@ public:
     void moveUp(float amount);
 
 protected:
-    float cam_roll=0, cam_yaw=0, cam_pitch=0;
     glm::vec3 lookAt_NotNormalized;
     glm::vec3 lookAt;
     float mouseSensitivity = 0.3f;

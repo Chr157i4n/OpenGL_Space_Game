@@ -500,17 +500,7 @@ void Renderer::renderShadowsMap()
 		//move to position of model
 		model = glm::translate(model, object->getPosition());
 
-		//rotate model around X
-		float angle = object->getRotation().x;
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(1, 0, 0));
-
-		//rotate model around Y
-		angle = object->getRotation().y;
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 1, 0));
-
-		//rotate model around z
-		angle = object->getRotation().z;
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 0, 1));
+		model = model * object->getRotationMat();
 
 		//view and projection
 		int modelUniformLocation = GLCALL(glGetUniformLocation(shaderShadowMap->getShaderId(), "u_model"));

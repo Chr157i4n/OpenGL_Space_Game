@@ -35,22 +35,6 @@ glm::vec3 Character::getVecUp()
 
 void Character::calculateFrontandUpVector()
 {
-	//vecFront.x = cos(glm::radians(cha_pitch)) * cos(glm::radians(cha_yaw));
-	//vecFront.y = sin(glm::radians(cha_pitch));
-	//vecFront.z = cos(glm::radians(cha_pitch)) * sin(glm::radians(cha_yaw));
-	//vecFront = glm::normalize(glm::rotate(rotationQuat, glm::vec3(1.0f, 0.0f, 0.0f)));
-
-	//vecUp = glm::normalize(glm::rotate(rotationQuat, vecUp));
-
-	//vecRight = glm::normalize(glm::rotate(rotationQuat, vecRight));
-
-	//vecUp = glm::vec3(0,1,0);
-	//glm::mat4 roll_mat = glm::rotate(glm::mat4(1.0f), glm::radians(cha_roll), vecFront);
-	//vecUp = glm::mat3(roll_mat) * vecUp;
-
-	//vecRight = glm::cross(vecFront, vecUp);
-	////vecUp = glm::cross(vecRight, vecFront);
-
 	glm::vec3 vecFrontLocal = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 vecUpLocal = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 vecRightLocal = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -108,11 +92,7 @@ void Character::moveLeft() {
 
 void Character::rollLeft()
 {
-	float32 v = rollSpeed;
-	
-	cha_roll += v;
-
-	glm::quat qRoll = glm::angleAxis(glm::radians(-rollSpeed), glm::vec3(0, 0, 1));
+	glm::quat qRoll = glm::angleAxis(glm::radians(+rollSpeed), glm::vec3(0, 0, 1));
 
 	rotationQuat = rotationQuat * qRoll;
 	setRotationQuat(rotationQuat);
@@ -123,11 +103,7 @@ void Character::rollLeft()
 
 void Character::rollRight()
 {
-	float32 v = -rollSpeed;
-
-	cha_roll += v;
-
-	glm::quat qRoll = glm::angleAxis(glm::radians(rollSpeed), glm::vec3(0, 0, 1));
+	glm::quat qRoll = glm::angleAxis(glm::radians(-rollSpeed), glm::vec3(0, 0, 1));
 
 	rotationQuat = rotationQuat * qRoll;
 	setRotationQuat(rotationQuat);
