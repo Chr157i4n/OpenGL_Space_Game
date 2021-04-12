@@ -21,16 +21,9 @@ The idea and the knowlegde for this project did i get from this german youtube O
 https://www.youtube.com/playlist?list=PLStQc0GqppuWBDuNWnkQ8rzmyx35AINyt
 https://github.com/Pilzschaf/OpenGLTutorial
 
-On of the first versions that had just material properties and no textures
+On of the first versions
 ![](Images/screenshot1.png)
-Implementation of textures, skybox, colored hud elements.
-That version had also already simple physic, the boxes in the middle are standing on top of each other
-![](Images/screenshot5.png)
-Transparent textures with alpha blending and arrows that have collision with the object and get stuck in it
-![](Images/screenshot8.png)
-A couple of testballs to test different textures and material properties. Metal (left in the middle) doesnt look well with the phong shading model.
-It is missing reflections of the world. Also the game renders shadows with the shadow mapping technique
-![](Images/screenshot9.png)
+
 
 
 used Libaries:
@@ -67,3 +60,4 @@ https://www.ambiera.com/irrklang
 
 used Textures from:
 https://3dtextures.me
+https://www.solarsystemscope.com/textures/
