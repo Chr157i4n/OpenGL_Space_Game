@@ -9,13 +9,13 @@
 void openGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
 	std::string messageS = message;
-	Logger::log("[OpenGL Callback] " + messageS);
+	Logger::info("[OpenGL Callback] " + messageS);
 }
 
 void _GLGetError(const char* file, int line, const char* call) {
 	while (GLenum error = glGetError())
 	{
-		Logger::log("[OpenGL Error] " + std::string((char*)glewGetErrorString(error)) + " in " + std::string(file) + ":" + std::to_string(line) + " Call: " + std::string(call));
+		Logger::error("[OpenGL Error] " + std::string((char*)glewGetErrorString(error)) + " in " + std::string(file) + ":" + std::to_string(line) + " Call: " + std::string(call));
 	}
 }
 #define GLCALL(call) call; _GLGetError(__FILE__, __LINE__, #call)
@@ -197,11 +197,11 @@ void Renderer::initOpenGL()
 	GLenum err = glewInit();
 	if (err != GLEW_OK)
 	{
-		Logger::log("Error: " + std::string((char*)glewGetErrorString(err)));
+		Logger::error("Error: " + std::string((char*)glewGetErrorString(err)));
 		std::cin.get();
 		exit;
 	}
-	Logger::log("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
+	Logger::info("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 
 #ifdef _DEBUG
 	glEnable(GL_DEBUG_OUTPUT);
@@ -998,25 +998,6 @@ void Renderer::renderObjects(bool transparent)
 
 		//move to position of model
 		model = glm::translate(model, object->getPosition());
-
-		//float x = 0, y = 0, z = 0;
-
-		//if (object->getType() & ObjectType::Object_Player)
-		//{
-		//	Character* character = static_cast<Character*>(object.get());
-		//	x = character->cha_pitch;
-		//	y = -character->cha_yaw-90;
-		//	z = -character->cha_roll;
-		//}
-		//
-		////model = model * rotationMatrix;
-		//glm::vec3 EulerAngles = glm::vec3(glm::radians(x), glm::radians(y), glm::radians(-z));
-
-		//glm::quat myQuat = glm::quat(EulerAngles);
-
-		//glm::mat4 rotationMatrix = glm::toMat4(myQuat);
-
-		//model = model * rotationMatrix;
 
 		model = model * object->getRotationMat();
 		

@@ -104,6 +104,8 @@ enum class PlayerAction {
 	moveBackward,
 	moveLeft,
 	moveRight,
+	moveUp,
+	moveDown,
 	rollLeft,
 	rollRight,
 	jump,
@@ -130,11 +132,13 @@ std::unordered_map<SDL_Keycode, PlayerAction> const keybindings =
 	{SDLK_s,		PlayerAction::moveBackward},
 	{SDLK_a,		PlayerAction::moveLeft},
 	{SDLK_d,		PlayerAction::moveRight},
+	{SDLK_SPACE,	PlayerAction::moveUp},
+	{SDLK_LCTRL,	PlayerAction::moveDown},
 	{SDLK_q,		PlayerAction::rollLeft},
 	{SDLK_e,		PlayerAction::rollRight},
-	{SDLK_SPACE,	PlayerAction::jump},
+	{SDLK_x,		PlayerAction::jump},
 	{SDLK_LSHIFT,	PlayerAction::sprint},
-	{SDLK_LCTRL,	PlayerAction::crouch},
+	{SDLK_c,		PlayerAction::crouch},
 	{SDLK_f,		PlayerAction::interact},
 	{SDLK_l,		PlayerAction::toggleFlashlight},
 	{SDLK_F3,		PlayerAction::toggleInfo},
@@ -312,6 +316,7 @@ public:
 	static UI_Element_Graph* fpsGraph;
 	static UI_Element_Label* lbl_stopwatch1, * lbl_stopwatch2, * lbl_stopwatch3, * lbl_stopwatch4, * lbl_stopwatch5, * lbl_stopwatch6;
 	static UI_Element_Label* lbl_ObjectCount;
+
 
 	static StopWatch gameStopWatch;
 	static StopWatch frametimeStopWatch;

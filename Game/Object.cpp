@@ -382,7 +382,7 @@ glm::vec3 Object::calculateDimensions()
 {
 	dimensions = model->getDimension();
 	boundingboxdimensions = model->getBoundingBoxDimension();
-	Logger::log(printObject() + " Dimensions: x: " + std::to_string(dimensions.x) + " y: " + std::to_string(dimensions.y) + " z: " + std::to_string(dimensions.z));
+	Logger::info(printObject() + " Dimensions: x: " + std::to_string(dimensions.x) + " y: " + std::to_string(dimensions.y) + " z: " + std::to_string(dimensions.z));
 	return dimensions;
 }
 
@@ -863,13 +863,13 @@ void Object::addToHealth(float32 addHealth)
 	health += addHealth;
 
 	if (addHealth > 0)
-		Logger::log(printObject() + " got healed by " + std::to_string((int)addHealth) + ". New Health: " + std::to_string((int)health));
+		Logger::info(printObject() + " got healed by " + std::to_string((int)addHealth) + ". New Health: " + std::to_string((int)health));
 	if (addHealth < 0)
-		Logger::log(printObject() + " got " + std::to_string((int)addHealth) + " damage. New Health: " + std::to_string((int)health));
+		Logger::info(printObject() + " got " + std::to_string((int)addHealth) + " damage. New Health: " + std::to_string((int)health));
 
 	if (health <= 0)
 	{
-		Logger::log(printObject() + " got destroyed");
+		Logger::info(printObject() + " got destroyed");
 	}
 }
 

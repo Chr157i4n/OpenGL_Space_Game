@@ -13,7 +13,7 @@ void UI_Element_ProgressBar::drawUI_Element()
 	float _y = y;
 	float _w = w;
 	float _h = h;
-	float _value = value / 100;
+	float _value = value / maxValue;
 	float outlineThickness = 0.01;
 
 	_x /= Game::getWindowWidth();
@@ -55,17 +55,30 @@ float UI_Element_ProgressBar::getValue() const
 
 void UI_Element_ProgressBar::setValue(float value)
 {
-	if (value>=0 && value<=100)
+	if (value>=0 && value<= maxValue)
 	{
 		this->value = value;
 	} 
-	else if (value > 100)
+	else if (value > maxValue)
 	{
-		this->value = 100;
+		this->value = maxValue;
 	}
 	else if (value < 0)
 	{
 		this->value = 0;
+	}
+}
+
+float UI_Element_ProgressBar::getMaxValue() const
+{
+	return maxValue;
+}
+
+void UI_Element_ProgressBar::setMaxValue(float maxValue)
+{
+	if (maxValue > 0)
+	{
+		this->maxValue = maxValue;
 	}
 }
 

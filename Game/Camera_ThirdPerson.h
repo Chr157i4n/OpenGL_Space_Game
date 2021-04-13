@@ -18,7 +18,7 @@ public:
 
     void moveSideways(float amount);
 
-    void moveUp(float amount);
+    void moveVertical(float amount);
 
 protected:
     glm::vec3 lookAt_NotNormalized;

@@ -118,7 +118,7 @@ bool Model::init(const char* filename, Shader* shader) {
 	uint64 numMaterials = 0;
 	std::ifstream input = std::ifstream(filename, std::ios::in | std::ios::binary);
 	if (!input.is_open()) {
-		Logger::log("Modelfile "+ std::string(filename) +" not found");
+		Logger::warn("Modelfile "+ std::string(filename) +" not found");
 		return false;
 	}
 

@@ -57,37 +57,101 @@ void Character::interactWithObject()
 
 void Character::resetVerticalMovement()
 {
-	movement = movement * glm::vec3(0, 0, 0);
+	////movement = movement * glm::vec3(0, 0, 0);
+	float brakevalue = 0.02f;
+	//
+	Logger::logVector(movement,"Move",2,"\033[34m");
+
+	//if (movement.x > brakevalue) movement.x -= brakevalue;
+	//if (movement.x < -brakevalue) movement.x += brakevalue;
+	//if (movement.x > -brakevalue && movement.x < brakevalue) movement.x = 0;
+
+	//if (movement.y > brakevalue) movement.y -= brakevalue;
+	//if (movement.y < -brakevalue) movement.y += brakevalue;
+	//if (movement.y > -brakevalue && movement.y < brakevalue) movement.y = 0;
+
+	//if (movement.z > brakevalue) movement.z -= brakevalue;
+	//if (movement.z < -brakevalue) movement.z += brakevalue;
+	//if (movement.z > -brakevalue && movement.z < brakevalue) movement.z = 0;
+
+	/*if (!Game::isKeyPressed(PlayerAction::moveForward)) {
+		glm::vec3 moveFront = movement * vecFront;
+		if (glm::length(moveFront) > brakevalue) {
+			if (glm::dot(movement, vecFront) > 0) {
+				Logger::warn("moving forward");
+				movement += glm::normalize(moveFront) * brakevalue;
+			}
+			else {
+				Logger::warn("moving backward");
+				movement -= glm::normalize(moveFront) * brakevalue;
+			}
+		}
+	}*/
+
+	glm::vec3 moveVec = glm::normalize(movement);
+	actualSpeed = glm::length(movement);
+
+	if (actualSpeed > 0) {
+		movement -= moveVec * brakevalue;
+	}
 }
 
 void Character::moveForward() {
-	glm::vec3 v = /*glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * */ getVecFront()/*)*/ * forwardSpeed;// *Game::getDelta() / 1000.0f;
+	glm::vec3 a = vecFront * forwardAccel;
 
-	movement += v;
+	if (glm::length(movement) < maxSpeed)
+	{
+		movement += a;
+	}
 }
 
 void Character::moveBackward() {
-	glm::vec3 v = /*glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * */ getVecFront()/*)*/ * -backwardSidewaySpeed;// *Game::getDelta() / 1000.0f;
+	glm::vec3 a = vecFront * -backwardSidewayAccel;
 
-	movement += v;
+	if (glm::length(movement) < maxSpeed)
+	{
+		movement += a;
+	}
 }
 
 void Character::moveRight() {
-	glm::mat4 roll_mat = glm::rotate(glm::mat4(1.0f), glm::radians(cha_roll), getVecFront());
-	glm::vec3 up2 = glm::mat3(roll_mat) * getVecUp();
 	
-	glm::vec3 v = /*glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * */ glm::cross(getVecFront(), up2)/*)*/ * backwardSidewaySpeed;// *Game::getDelta() / 1000.0f;
+	glm::vec3 a = vecRight * backwardSidewayAccel;
 
-	movement += v;
+	if (glm::length(movement) < maxSpeed)
+	{
+		movement += a;
+	}
 }
 
 void Character::moveLeft() {
-	glm::mat4 roll_mat = glm::rotate(glm::mat4(1.0f), glm::radians(cha_roll), getVecFront());
-	glm::vec3 up2 = glm::mat3(roll_mat) * getVecUp();
 
-	glm::vec3 v = /*glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * */ glm::cross(getVecFront(), up2)/*)*/ * -backwardSidewaySpeed; //* Game::getDelta() / 1000.0f;
+	glm::vec3 a = vecRight * -backwardSidewayAccel;
 
-	movement += v;
+	if (glm::length(movement) < maxSpeed)
+	{
+		movement += a;
+	}
+}
+
+void Character::moveUp()
+{
+	glm::vec3 a = vecUp * upwardAccel;
+
+	if (glm::length(movement) < maxSpeed)
+	{
+		movement += a;
+	}
+}
+
+void Character::moveDown()
+{
+	glm::vec3 a = vecUp * -upwardAccel;
+
+	if (glm::length(movement) < maxSpeed)
+	{
+		movement += a;
+	}
 }
 
 void Character::rollLeft()
@@ -134,7 +198,7 @@ void Character::activateJumping()
 	if (!canJump)
 	{
 		canJump = true;
-		Logger::log("Jumping activated for: " + printObject());
+		Logger::info("Jumping activated for: " + printObject());
 	}
 }
 
@@ -154,12 +218,12 @@ void Character::run(bool run)
 {
 	if (run && !isRunning)
 	{
-		forwardSpeed = forwardSpeed * 2;
+		forwardAccel = forwardAccel * 2;
 		isRunning = true;
 	}
 	else if (!run && isRunning)
 	{
-		forwardSpeed = forwardSpeed / 2;
+		forwardAccel = forwardAccel / 2;
 		isRunning = false;
 	}
 }

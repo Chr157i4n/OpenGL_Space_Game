@@ -71,7 +71,7 @@ void Map::restart()
 
 	UI::clearUI_Elements();
 
-	Game::players[0]->createHealthbar();
+	Game::players[0]->createUIElements();
 
 	//Renderer::resetFrameCount();
 	//todo: if object dies, this doesnt work anymore. perhaps died objects should only be "disabled" instead of deleted
@@ -103,7 +103,7 @@ std::vector<std::string> Map::getSkyboxFaces()
 
 void Map::loadSkybox()
 {
-	Logger::log("Load Skybox: " + Map::skyboxName);
+	Logger::info("Load Skybox: " + Map::skyboxName);
 	std::vector<std::string> faces = Map::getSkyboxFaces();
 	skyboxTexture = ResourceManager::loadCubemap(faces);
 }

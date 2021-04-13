@@ -452,6 +452,34 @@ void Game::processInput()
 			menu_current->rightOnSelectedMenuElement();
 		}
 	}
+	if (isKeyPressed(PlayerAction::moveUp))
+	{
+		if (gameState == GameState::GAME_ACTIVE || gameState == GameState::GAME_GAME_OVER)
+		{
+			if (players.size() > 0) {
+				players[0]->moveUp();
+				AudioManager::updateAudioListener();
+			}
+		}
+		else if (gameState == GameState::GAME_MENU)
+		{
+			menu_current->rightOnSelectedMenuElement();
+		}
+	}
+	if (isKeyPressed(PlayerAction::moveDown))
+	{
+		if (gameState == GameState::GAME_ACTIVE || gameState == GameState::GAME_GAME_OVER)
+		{
+			if (players.size() > 0) {
+				players[0]->moveDown();
+				AudioManager::updateAudioListener();
+			}
+		}
+		else if (gameState == GameState::GAME_MENU)
+		{
+			menu_current->rightOnSelectedMenuElement();
+		}
+	}
 	if (isKeyPressed(PlayerAction::rollLeft))
 	{
 		if (gameState == GameState::GAME_ACTIVE || gameState == GameState::GAME_GAME_OVER)
@@ -552,7 +580,7 @@ void Game::keyPressed(SDL_Keycode key)
 	if (it != keybindings.end()) {
 		action = it->second;
 	}
-	else { Logger::log("Keybinding not found!"); /*return;*/ }
+	else { Logger::warn("Keybinding not found!"); /*return;*/ }
 
 	//Single Action Keys, just one time per pressing
 	if (!Game::isKeyPressed(key))
@@ -668,7 +696,7 @@ void Game::keyReleased(SDL_Keycode key)
 	if (it != keybindings.end()) {
 		action = it->second;
 	}
-	if (action == PlayerAction::None) { Logger::log("Keybinding not found!"); /*return;*/ }
+	if (action == PlayerAction::None) { Logger::warn("Keybinding not found!"); /*return;*/ }
 
 	Game::setKeyPressed(key, false);
 }

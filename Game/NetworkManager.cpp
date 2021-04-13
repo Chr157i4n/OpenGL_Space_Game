@@ -13,14 +13,14 @@ void NetworkManager::init()
 {
 	if (enet_initialize() != 0)
 	{
-		Logger::log("[ENet] An error occurred while initializing ENet");
+		Logger::error("[ENet] An error occurred while initializing ENet");
 	}
 
 
 	client = enet_host_create(NULL, 1, 1, 0, 0);
 	if (client == NULL)
 	{
-		Logger::log("[ENet] An error occurred while trying to create an ENet server host");
+		Logger::error("[ENet] An error occurred while trying to create an ENet server host");
 	}
 
 
@@ -39,19 +39,19 @@ void NetworkManager::connect()
 	/* Connect to some.server.net:1234. */
 	enet_address_set_host(&address, ConfigManager::server_address.c_str());
 	address.port = ConfigManager::server_port;
-	Logger::log("Connecting to: "+ ConfigManager::server_address +":"+std::to_string(ConfigManager::server_port));
+	Logger::info("Connecting to: "+ ConfigManager::server_address +":"+std::to_string(ConfigManager::server_port));
 	/* Initiate the connection, allocating the two channels 0 and 1. */
 	peer = enet_host_connect(client, &address, 2, 0);
 	if (peer == NULL)
 	{
-		Logger::log("[ENet] No available peers for initiating an ENet connection");
+		Logger::warn("[ENet] No available peers for initiating an ENet connection");
 		return;
 	}
 	/* Wait up to 5 seconds for the connection attempt to succeed. */
 	if (enet_host_service(client, &event, 5000) > 0 &&
 		event.type == ENET_EVENT_TYPE_CONNECT)
 	{
-		Logger::log("[ENet] Connection to Server succeeded.");
+		Logger::info("[ENet] Connection to Server succeeded.");
 		isConnected = true;
 	}
 	else
@@ -60,7 +60,7 @@ void NetworkManager::connect()
 		/* received. Reset the peer in the event the 5 seconds   */
 		/* had run out without any significant event.            */
 		enet_peer_reset(peer);
-		Logger::log("[ENet] Connection to Server failed.");
+		Logger::warn("[ENet] Connection to Server failed.");
 	}
 }
 
@@ -79,7 +79,7 @@ void NetworkManager::disconnect()
 				enet_packet_destroy(event.packet);
 				break;
 			case ENET_EVENT_TYPE_DISCONNECT:
-				Logger::log("Disconnection succeeded.");
+				Logger::info("Disconnection succeeded.");
 				isConnected = false;
 				return;
 			}
@@ -127,7 +127,7 @@ void NetworkManager::readData(int timeout_ms)
 			{
 			case ENET_EVENT_TYPE_CONNECT:
 			{
-				Logger::log("A new client connected from" + std::to_string(event.peer->address.host) + ":" + std::to_string(event.peer->address.port));
+				Logger::info("A new client connected from" + std::to_string(event.peer->address.host) + ":" + std::to_string(event.peer->address.port));
 				break;
 			}
 			case ENET_EVENT_TYPE_RECEIVE:
@@ -140,7 +140,7 @@ void NetworkManager::readData(int timeout_ms)
 			}
 			case ENET_EVENT_TYPE_DISCONNECT:
 			{
-				Logger::log("disconnect");
+				Logger::info("disconnect");
 				break;
 			}
 			}
@@ -181,7 +181,7 @@ void NetworkManager::parseData(std::string data)
 	}
 	catch (std::exception)
 	{
-		Logger::log("cant parse NetworkData: "+ data);
+		Logger::error("cant parse NetworkData: "+ data);
 		
 		std::stringstream errMsg;
 		errMsg << "cant parse NetworkData: " << data;
@@ -193,13 +193,13 @@ void NetworkManager::parseData(std::string data)
 	{
 	case NetworkCommand::change_id:
 		{
-			Logger::log("this client has id: "+std::to_string(networkID_m));
+			Logger::info("this client has id: "+std::to_string(networkID_m));
 			NetworkManager::clientID = networkID_m;
 			break;
 		}
 	case NetworkCommand::change_map:
 		{
-			Logger::log("Server changes map: "+param_string);
+			Logger::info("Server changes map: "+param_string);
 			Map::load(param_string);
 			Game::startGame(Game_Mode::GameMode_MultiPlayer);
 			sendPlayerPosition();
@@ -209,7 +209,7 @@ void NetworkManager::parseData(std::string data)
 	case NetworkCommand::player_connected:
 		{
 			if (networkID_m == NetworkManager::clientID) break;
-			Logger::log("new client connected to server, id: " + std::to_string(networkID_m));
+			Logger::info("new client connected to server, id: " + std::to_string(networkID_m));
 			std::shared_ptr<Character> newCharacter = std::make_shared<Character>(Renderer::getShader(ShaderType::basic));
 			newCharacter->setNetworkID(networkID_m);
 			Game::clients.push_back(newCharacter);
@@ -220,7 +220,7 @@ void NetworkManager::parseData(std::string data)
 	case NetworkCommand::player_disconnected:
 		{
 			if (networkID_m == NetworkManager::clientID) break;
-			Logger::log("client diconnected from server: " + std::to_string(networkID_m));
+			Logger::info("client diconnected from server: " + std::to_string(networkID_m));
 			for (std::shared_ptr<Character> client : Game::clients)
 			{
 				if (client->getNetworkID() == networkID_m)
@@ -303,7 +303,7 @@ void NetworkManager::parseData(std::string data)
 	}
 	case NetworkCommand::shoot:
 		{
-			Logger::log("someone shot");
+			Logger::info("someone shot");
 			std::shared_ptr<Bullet> newBullet = std::make_shared<Bullet>(Renderer::getShader(ShaderType::basic));
 			newBullet->setNetworkID(networkID_m);
 			Game::bullets.push_back(newBullet);
@@ -324,7 +324,7 @@ void NetworkManager::parseData(std::string data)
 	case NetworkCommand::hit:
 	{
 		if (networkID_m != NetworkManager::clientID) break;
-		Logger::log("you got hit");
+		Logger::info("you got hit");
 		Game::players[0]->registerHit();
 		AudioManager::play3D("audio/hit.wav", Game::players[0]->getPosition());
 		break;

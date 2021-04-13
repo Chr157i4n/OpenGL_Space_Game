@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <ios>
+#include <sstream>
 
 #include "libs/glm/glm.hpp"
 

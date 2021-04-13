@@ -165,7 +165,7 @@ void Menu_Options::setVolume()
 void Menu_Options::changeShadowMapResolution()
 {
 	float newResolution = sL_shadowres->getValue();
-	Logger::log("changed Shadow Map Resolution to: " + std::to_string(newResolution) + " px");
+	Logger::info("changed Shadow Map Resolution to: " + std::to_string(newResolution) + " px");
 	ConfigManager::shadow_map_resolution = newResolution;
 	Renderer::initFrameBuffer();
 	Renderer::resetFrameCount();
@@ -174,7 +174,7 @@ void Menu_Options::changeShadowMapResolution()
 void Menu_Options::changeEnvMapResolution()
 {
 	float newResolution = sL_envres->getValue();
-	Logger::log("changed Environment Map Resolution to: " + std::to_string(newResolution) + " px");
+	Logger::info("changed Environment Map Resolution to: " + std::to_string(newResolution) + " px");
 	ConfigManager::env_map_resolution = newResolution;
 	Renderer::initFrameBuffer();
 	Renderer::resetFrameCount();

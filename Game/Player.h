@@ -8,6 +8,7 @@
 #include "Camera_FPS.h"
 #include "Camera_ThirdPerson.h"
 #include "UI_Element_ProgressBar.h"
+#include "UI_Element_Label.h"
 #include "Character.h"
 
 class Player : public Character, public ThirdPersonCamera
@@ -43,7 +44,7 @@ public:
 
 	virtual void reactToCollision(CollisionResult collisionResult);
 
-	void createHealthbar();
+	void createUIElements();
 
 	virtual void addToHealth(float32 addHealth);
 
@@ -54,7 +55,9 @@ public:
 private:
 
 	bool flashlightActive = false;
-	UI_Element_ProgressBar* healthBar;
+	UI_Element_ProgressBar* prb_health;
+	UI_Element_ProgressBar* prb_PlayerSpeed;
+	UI_Element_Label* lbl_PlayerSpeed;
 
 	glm::vec3 cameraOffset = glm::vec3(0, 0, 0);
 	

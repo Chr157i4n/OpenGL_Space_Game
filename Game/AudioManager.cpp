@@ -13,7 +13,7 @@ void AudioManager::init()
 
 	if (!SoundEngine)
 	{
-		Logger::log("Error while starting irrKlang SoundEngine");
+		Logger::error("Error while starting irrKlang SoundEngine");
 		return; // error starting up the engine
 	}
 
@@ -46,7 +46,7 @@ irrklang::ISound* AudioManager::play2D(std::string musicFile, AudioType audiotyp
 	irrklang::ISound* sound = SoundEngine->play2D(musicFile.c_str(), playLooped, false, true);
 	if (!sound)
 	{
-		Logger::log("Error playing sound: " + musicFile);
+		Logger::error("Error playing sound: " + musicFile);
 		return nullptr;
 	}
 
@@ -77,7 +77,7 @@ irrklang::ISound* AudioManager::play3D(std::string musicFile, glm::vec3 position
 	irrklang::ISound* sound = SoundEngine->play3D(musicFile.c_str(), glmVec3toIrrklang(position), playLooped, false, true);
 	if (!sound)
 	{
-		Logger::log("Error playing sound: " + musicFile);
+		Logger::error("Error playing sound: " + musicFile);
 		return nullptr;
 	}
 	

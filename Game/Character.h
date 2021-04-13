@@ -34,6 +34,10 @@ public:
 
 	void moveLeft();
 
+	void moveUp();
+
+	void moveDown();
+
 	void rollLeft();
 
 	void rollRight();
@@ -83,11 +87,13 @@ protected:
 	glm::vec3 vecRight;
 	
 
-
-	float32 forwardSpeed = 10;				//per second
-	float32 backwardSidewaySpeed = 5;		//per second
-	float32 upwardSpeed = 0;				//per second
+	float32 maxSpeed = 60;
+	float32 forwardAccel = 0.1f;				//per second
+	float32 backwardSidewayAccel = 0.04f;		//per second
+	float32 upwardAccel = 0.04f;				//per second
 	float32 rollSpeed = 0.1f;
+
+	float32 actualSpeed = 0;
 
 	const float32 heigth = 4;
 

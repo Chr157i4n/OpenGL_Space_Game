@@ -109,7 +109,7 @@ bool LuaManager::checkLua(lua_State* L, int r)
 	if (r != LUA_OK)
 	{
 		std::string errormsg = lua_tostring(L, -1);
-		Logger::log("[LUA Error]" + errormsg);
+		Logger::error("[LUA Error]" + errormsg);
 		return false;
 	}
 }
@@ -121,7 +121,7 @@ void LuaManager::registerFunction(std::string luafunctionIndentifierer, lua_CFun
 
 void LuaManager::loadScripts()
 {
-	Logger::log("Loading LUA Scripts");
+	Logger::info("Loading LUA Scripts");
 	//checkLua(L, luaL_dofile(L, "scripts/button1.lua"));
 	std::vector<std::string> scripts = readAllScripts();
 
@@ -141,7 +141,7 @@ void LuaManager::runFunction(std::string lua_function)
 		if (checkLua(L, lua_pcall(L, 0, 1, 0)))
 		{
 			std::string returnValue = lua_tostring(L, -1);
-			Logger::log("[C++] called in Lua: " + returnValue);
+			Logger::info("[C++] called in Lua: " + returnValue);
 		}
 	}
 }

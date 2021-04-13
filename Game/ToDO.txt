@@ -1,4 +1,19 @@
-﻿- switch level from ingame	✓
+﻿- collision with sphere
+
+- shoot laser
+
+- shoot rockets
+
+- movement of spaceship	✓
+
+- rendering of shadows
+
+- rotation of planets
+- movement of planets
+
+- different texture for night side of earth planet
+
+- switch level from ingame	✓
 
 - dynamic environment mapping game settings
 - main menu background in options menu?

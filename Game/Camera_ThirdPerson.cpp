@@ -36,7 +36,7 @@ void ThirdPersonCamera::moveSideways(float amount)
     update();
 }
 
-void ThirdPersonCamera::moveUp(float amount)
+void ThirdPersonCamera::moveVertical(float amount)
 {
     translate(up * amount);
     update();

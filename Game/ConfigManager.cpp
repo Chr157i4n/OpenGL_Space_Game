@@ -52,12 +52,12 @@ void ConfigManager::init(std::string nConfigFileName)
 
 std::string ConfigManager::readConfig(std::string key)
 {
-	Logger::log("reading Configuration key: " + key);
+	Logger::info("reading Configuration key: " + key);
 	std::ifstream configFile;
 	configFile.open(configFileName);
 
 	if (!configFile) {
-		Logger::log("Cant open Configfile: " + configFileName);
+		Logger::error("Cant open Configfile: " + configFileName);
 		return "";
 	}
 
@@ -93,13 +93,13 @@ std::string ConfigManager::readConfig(std::string key)
 
 	}
 
-	Logger::log("While reading config did not find this key: " + key);
+	Logger::warn("While reading config did not find this key: " + key);
 	return "";
 }
 
 void ConfigManager::readAllConfigs()
 {
-	Logger::log("Reading Configuration");
+	Logger::info("Reading Configuration");
 	std::string config = "";
 
 	//[General]
@@ -194,12 +194,12 @@ void ConfigManager::readAllConfigs()
 
 void ConfigManager::writeConfig(std::string key, std::string value)
 {
-	Logger::log("Writing Configuration key: " + key + " value: " + value);
+	Logger::info("Writing Configuration key: " + key + " value: " + value);
 	std::ifstream filein(configFileName); //File to read from
 	std::ofstream fileout("_" + configFileName); //Temporary file
 	if (!filein || !fileout)
 	{
-		Logger::log("Error opening configfiles for saving!");
+		Logger::error("Error opening configfiles for saving!");
 		return;
 	}
 
@@ -256,7 +256,7 @@ void ConfigManager::writeConfig(std::string key, std::string value)
 	{
 		lineout = key + " = " + value;
 		fileout << '\n' << lineout;
-		Logger::log("While writing did not find this key: " + key + ". Added it at the end");
+		Logger::info("While writing did not find this key: " + key + ". Added it at the end");
 	}
 
 	filein.close();
@@ -268,7 +268,7 @@ void ConfigManager::writeConfig(std::string key, std::string value)
 
 void ConfigManager::writeAllConfigs()
 {
-	Logger::log("Writing Configuration");
+	Logger::info("Writing Configuration");
 	//[General]
 	ConfigManager::writeConfig("player_name", ConfigManager::player_name);
 	ConfigManager::writeConfig("level", ConfigManager::level);

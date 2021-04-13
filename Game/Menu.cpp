@@ -122,7 +122,7 @@ int Menu::onKeyDown(SDL_Keycode key)
 	if (it != menu_keybindings.end()) {
 		action = it->second;
 	}
-	if (action == MenuAction::None) { Logger::log("Keybinding not found!"); return -1; }
+	if (action == MenuAction::None) { Logger::warn("Keybinding not found!"); return -1; }
 
 	switch (action)
 	{

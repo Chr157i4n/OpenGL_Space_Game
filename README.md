@@ -21,7 +21,7 @@ The idea and the knowlegde for this project did i get from this german youtube O
 https://www.youtube.com/playlist?list=PLStQc0GqppuWBDuNWnkQ8rzmyx35AINyt
 https://github.com/Pilzschaf/OpenGLTutorial
 
-On of the first versions
+One of the first versions
 ![](Images/screenshot1.png)
 
 

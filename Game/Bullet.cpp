@@ -53,7 +53,7 @@ void Bullet::checkHit()
 
 		this->registerHit();
 		collidedObject->object->registerHit();
-		Logger::log(collidedObject->object->printObject() + " was hit");
+		Logger::info(collidedObject->object->printObject() + " was hit");
 		
 		AudioManager::play3D("audio/hit.wav", this->getPosition());
 	}

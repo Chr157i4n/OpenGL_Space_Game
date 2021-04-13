@@ -15,7 +15,11 @@ public:
     float getValue() const;
     void setValue(float value);
 
+    float getMaxValue() const;
+    void setMaxValue(float maxValue);
+
 private:
 	float value = 0;
+    float maxValue = 100;
 };
 

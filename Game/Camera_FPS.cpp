@@ -50,7 +50,7 @@ void FPSCamera::moveSideways(float amount)
     update();
 }
 
-void FPSCamera::moveUp(float amount) 
+void FPSCamera::moveVertical(float amount) 
 {
     translate(up * amount);
     update();

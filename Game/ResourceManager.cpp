@@ -24,7 +24,7 @@ Shader* ResourceManager::loadShader(std::string vertexShaderFilename, std::strin
 std::vector<Model*> ResourceManager::loadAllModels(std::string modelFileName)
 {
 	Renderer::getModels().clear();
-	Logger::log("Loading all Models");
+	Logger::info("Loading all Models");
 
 	std::string newmodefilename;
 	std::vector<Model*> models;
@@ -108,7 +108,7 @@ std::vector<Model*> ResourceManager::loadAllModels(std::string modelFileName)
 		newModel->setModelID(id++);
 
 		percentageLoading += 80 / modelCount;
-		Logger::log("loaded Model " + std::to_string(newModel->getModelID()) + ": " + newModel->getModelName() + " - " + Helper::to_string_with_precision(percentageLoading, 0) + "%");
+		Logger::info("loaded Model " + std::to_string(newModel->getModelID()) + ": " + newModel->getModelName() + " - " + Helper::to_string_with_precision(percentageLoading, 0) + "%");
 		Renderer::loadingProgressBar->setValue(percentageLoading);
 		Renderer::drawLoadingScreen();
 
@@ -117,7 +117,7 @@ std::vector<Model*> ResourceManager::loadAllModels(std::string modelFileName)
 
 	Renderer::setModels(models);
 
-	Logger::log("Loading all Models - finished");
+	Logger::info("Loading all Models - finished");
 	return models;
 }
 
@@ -179,7 +179,7 @@ void ResourceManager::loadMap(std::string mapFileName)
 	tinyxml2::XMLDocument doc;
 	std::string xmlNodeText;
 
-	Logger::log("Loading Map");
+	Logger::info("Loading Map");
 	doc.LoadFile(mapFileNameC);
 
 	tinyxml2::XMLElement* xmlNode;
@@ -189,7 +189,7 @@ void ResourceManager::loadMap(std::string mapFileName)
 
 	if (!mapNode)
 	{
-		Logger::log("Map file has no 'map' Node.");
+		Logger::warn("Map file has no 'map' Node.");
 		return;
 	}
 
@@ -213,7 +213,7 @@ void ResourceManager::loadMap(std::string mapFileName)
 
 
 
-	Logger::log("Loading all Objects");
+	Logger::info("Loading all Objects");
 	float objectCount = 0;
 	for (tinyxml2::XMLElement* xmlNodeObject = mapNode->FirstChildElement("objects")->FirstChildElement("object"); xmlNodeObject != NULL; xmlNodeObject = xmlNodeObject->NextSiblingElement())
 	{
@@ -225,11 +225,11 @@ void ResourceManager::loadMap(std::string mapFileName)
 	{
 		loadObject(xmlNodeObject, objectCount);
 	}
-	Logger::log("Loading all Objects - finished");
+	Logger::info("Loading all Objects - finished");
 
 
 
-	Logger::log("Loading all NPCs");
+	Logger::info("Loading all NPCs");
 	float npcCount = 0;
 	for (tinyxml2::XMLElement* xmlNodeBot = mapNode->FirstChildElement("bots")->FirstChildElement("bot"); xmlNodeBot != NULL; xmlNodeBot = xmlNodeBot->NextSiblingElement())
 	{
@@ -254,13 +254,13 @@ void ResourceManager::loadMap(std::string mapFileName)
 		newNpc->setNumber(numObject);
 		newNpc->setCurrentTask(CurrentTask::Follow_Character);
 
-		Logger::log("created NPC:" + newNpc->printObject());
+		Logger::info("created NPC:" + newNpc->printObject());
 		Game::objects.push_back(newNpc);
 		Game::npcs.push_back(newNpc);
 		Game::characters.push_back(newNpc);
 		numObject++;
 	}
-	Logger::log("Loading all NPCs - finished");
+	Logger::info("Loading all NPCs - finished");
 
 
 	//set the ids
@@ -308,7 +308,7 @@ void ResourceManager::loadMap(std::string mapFileName)
 
 
 
-	Logger::log("Loading Map - finished");
+	Logger::info("Loading Map - finished");
 }
 
 void ResourceManager::loadMapProperties(tinyxml2::XMLElement* xmlNode)
@@ -472,7 +472,7 @@ void ResourceManager::loadObject(tinyxml2::XMLElement* xmlNode, int objectCount)
 	newObject->setNumber(Game::objects.size());
 
 	percentageLoading += 10 / objectCount;
-	Logger::log("loaded Object:" + newObject->printObject() + " - " + Helper::to_string_with_precision(percentageLoading, 0) + "%");
+	Logger::info("loaded Object:" + newObject->printObject() + " - " + Helper::to_string_with_precision(percentageLoading, 0) + "%");
 	Renderer::loadingProgressBar->setValue(percentageLoading);
 	Renderer::drawLoadingScreen();
 	Game::objects.push_back(newObject);
@@ -535,7 +535,7 @@ void ResourceManager::loadNpc(tinyxml2::XMLElement* xmlNode, int npcCount)
 	newNPC->setNumber(Game::objects.size());
 
 	percentageLoading += 10 / npcCount;
-	Logger::log("loaded NPC:" + newNPC->printObject() + " - " + Helper::to_string_with_precision(percentageLoading, 0) + "%");
+	Logger::info("loaded NPC:" + newNPC->printObject() + " - " + Helper::to_string_with_precision(percentageLoading, 0) + "%");
 	Renderer::loadingProgressBar->setValue(percentageLoading);
 	Renderer::drawLoadingScreen();
 

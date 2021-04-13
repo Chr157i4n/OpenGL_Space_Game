@@ -20,7 +20,7 @@ Player::Player(Shader* shader, float fov, float width, float height) : Character
 
 	this->name = "Player";
 
-	createHealthbar();
+	createUIElements();
 }
 
 
@@ -41,7 +41,7 @@ void Player::onMouseMove(float xRel, float yRel)
 	angleYaw = std::max(angleYaw, -maxYaw);
 
 
-	Logger::log("Pitch: "+std::to_string(anglePitch)+"\tYaw: "+ std::to_string(angleYaw));
+	//Logger::log("Pitch: "+std::to_string(anglePitch)+"\tYaw: "+ std::to_string(angleYaw));
 
 	glm::quat qPitch = glm::angleAxis(anglePitch, glm::vec3(1, 0, 0));
 	glm::quat qYaw = glm::angleAxis(angleYaw, glm::vec3(0, 1, 0));
@@ -68,7 +68,7 @@ void Player::onMouseMove(float xRel, float yRel)
 
 void Player::updateCameraPosition()
 {
-	float cameraspeed = 0.015;
+	float cameraspeed = 0.1;
 
 	glm::vec3 cameratargetposition = position - getVecFront() * camera_distancetoPlayer;
 	cameratargetposition += getVecUp() * glm::vec3(2);
@@ -153,7 +153,7 @@ void Player::toggleFlashlight()
 void Player::registerHit()
 {
 	addToHealth(-20);
-	healthBar->setValue(health);
+	prb_health->setValue(health);
 }
 
 void Player::rollLeft()
@@ -173,20 +173,30 @@ void Player::reactToCollision(CollisionResult collisionResult)
 	this->Object::reactToCollision(collisionResult);
 }
 
-void Player::createHealthbar()
+void Player::createUIElements()
 {
-	healthBar = new UI_Element_ProgressBar(10, 10, 100, 20, 0, 0);
-	healthBar->setForeColor(glm::vec4(1, 0, 0, 0.5));
-	healthBar->setBackColor(glm::vec4(0.2, 0.2, 0.2, 0.4));
-	healthBar->setValue(100);
+	prb_health = new UI_Element_ProgressBar(10, 10, 100, 20, 0, 0);
+	prb_health->setForeColor(glm::vec4(1, 0, 0, 0.5));
+	prb_health->setBackColor(glm::vec4(0.2, 0.2, 0.2, 0.4));
+	prb_health->setValue(100);
+	UI::addElement(prb_health);
 
-	UI::addElement(healthBar);
+
+	prb_PlayerSpeed = new UI_Element_ProgressBar(120, 10, 100, 20, 0, 0);
+	prb_PlayerSpeed->setForeColor(glm::vec4(0, 0.5, 1, 0.5));
+	prb_PlayerSpeed->setBackColor(glm::vec4(0.2, 0.2, 0.2, 0.4));
+	prb_PlayerSpeed->setValue(actualSpeed);
+	prb_PlayerSpeed->setMaxValue(maxSpeed);
+	UI::addElement(prb_PlayerSpeed);
+
+	lbl_PlayerSpeed = new UI_Element_Label(120, 40, 100, 50, "0.00", 0, 1, glm::vec4(0, 0.5, 1, 0.5), glm::vec4(0.2, 0.2, 0.2, 0.4));
+	UI::addElement(lbl_PlayerSpeed);
 }
 
 void Player::addToHealth(float32 addHealth)
 {
 	health += addHealth;
-	healthBar->setValue(health);
+	prb_health->setValue(health);
 
 	if (addHealth < -10)
 	{
@@ -194,13 +204,13 @@ void Player::addToHealth(float32 addHealth)
 	}
 
 	if (addHealth > 0)
-		Logger::log(printObject() + " got healed by " + std::to_string((int)addHealth) + ". New Health: " + std::to_string((int)health));
+		Logger::info(printObject() + " got healed by " + std::to_string((int)addHealth) + ". New Health: " + std::to_string((int)health));
 	if (addHealth < 0)
-		Logger::log(printObject() + " got " + std::to_string((int)addHealth) + " damage. New Health: " + std::to_string((int)health));
+		Logger::info(printObject() + " got " + std::to_string((int)addHealth) + " damage. New Health: " + std::to_string((int)health));
 
 	if (health <= 0)
 	{
-		Logger::log(printObject() + " got destroyed");
+		Logger::info(printObject() + " got destroyed");
 		UI_Element* victoryLabel = new UI_Element_Label(Game::getWindowWidth() / 2 - 80, Game::getWindowHeight() / 2, 10, 10, "Du bist gestorben", 5000, 1, glm::vec4(1, 0, 0, 1), glm::vec4(0.2, 0.2, 0.2, 0.4), false);
 		UI::addElement(victoryLabel);
 		Game::setGameState(GameState::GAME_GAME_OVER);
@@ -213,6 +223,7 @@ void Player::spawn(glm::vec3 position, glm::vec3 lookAt)
 	this->lookAt = lookAt;
 
 	this->health = 100;
+	prb_health->setValue(100);
 
 	this->setEnabled(true);
 }
@@ -220,6 +231,9 @@ void Player::spawn(glm::vec3 position, glm::vec3 lookAt)
 void Player::move()
 {
 	this->Object::move();
+
+	prb_PlayerSpeed->setValue(actualSpeed);
+	lbl_PlayerSpeed->setText(Helper::to_string_with_precision(actualSpeed,2));
 
 	if (movement != glm::vec3(0, 0, 0))
 	{
