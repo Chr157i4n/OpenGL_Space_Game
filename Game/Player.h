@@ -22,6 +22,10 @@ public:
 
 	//virtual glm::vec3 getLookOrigin();
 
+	void calculationBeforeFrame();
+
+	void calculationAfterFrame();
+
 	void onMouseMove(float xRel, float yRel);
 
 	void updateCameraPosition();
@@ -29,6 +33,8 @@ public:
 	void resetCameraPosition();
 
 	glm::vec3 getCameraPosition();
+
+	void updateAngleAroundCharacter(float targetYawAroundCharacter, float targetPitchAroundCharacter);
 
 	void setCameraPosition(glm::vec3 newPosition);
 
@@ -60,6 +66,15 @@ private:
 	UI_Element_Label* lbl_PlayerSpeed;
 
 	glm::vec3 cameraOffset = glm::vec3(0, 0, 0);
+
+	float32 maxPitch = 0.003f;
+	float32 maxYaw = 0.003f;
+
+	float32 yawAroundCharacter = 0;
+	float32 pitchAroundCharacter = 10;
+	float32 cameraAroundCharacterSpeed = 0.02f;
+
+	bool MouseMoved = false;
 	
 
 

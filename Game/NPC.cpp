@@ -65,9 +65,17 @@ void NPC::followNavPoints()
 	vecFront = targetPosition - myPosition;
 	vecFront = glm::normalize(vecFront);
 
+	vecUp = glm::vec3(1, 0, 0);
+
+
+
 	float pitch = glm::degrees(asin(-vecFront.y));
 	float yaw = glm::degrees(atan2(vecFront.x, vecFront.z));
 	setRotation(glm::vec3(0, yaw, 0));
+
+	glm::quat newRotQuat = glm::quat(glm::vec3(pitch,yaw,0));
+
+	setRotationQuat(newRotQuat);
 
 	float distance = glm::length(targetPosition - myPosition);
 

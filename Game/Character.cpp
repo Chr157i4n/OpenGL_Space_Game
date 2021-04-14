@@ -5,7 +5,7 @@
 
 #include <cmath>
 
-Character::Character(Shader* shader) : Object(shader, "character.bmf")
+Character::Character(Shader* shader) : Object(shader, "spaceship.bmf")
 {
 	this->shader = shader;
 	vecFront = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -57,42 +57,27 @@ void Character::interactWithObject()
 
 void Character::resetVerticalMovement()
 {
-	////movement = movement * glm::vec3(0, 0, 0);
-	float brakevalue = 0.02f;
-	//
-	Logger::logVector(movement,"Move",2,"\033[34m");
+	float brakevalue = 0.001f;
+	brakevalue *= glm::length(movement);
 
-	//if (movement.x > brakevalue) movement.x -= brakevalue;
-	//if (movement.x < -brakevalue) movement.x += brakevalue;
-	//if (movement.x > -brakevalue && movement.x < brakevalue) movement.x = 0;
+	//Logger::logVector(movement,"Move",2,"\033[34m");
 
-	//if (movement.y > brakevalue) movement.y -= brakevalue;
-	//if (movement.y < -brakevalue) movement.y += brakevalue;
-	//if (movement.y > -brakevalue && movement.y < brakevalue) movement.y = 0;
-
-	//if (movement.z > brakevalue) movement.z -= brakevalue;
-	//if (movement.z < -brakevalue) movement.z += brakevalue;
-	//if (movement.z > -brakevalue && movement.z < brakevalue) movement.z = 0;
-
-	/*if (!Game::isKeyPressed(PlayerAction::moveForward)) {
-		glm::vec3 moveFront = movement * vecFront;
-		if (glm::length(moveFront) > brakevalue) {
-			if (glm::dot(movement, vecFront) > 0) {
-				Logger::warn("moving forward");
-				movement += glm::normalize(moveFront) * brakevalue;
-			}
-			else {
-				Logger::warn("moving backward");
-				movement -= glm::normalize(moveFront) * brakevalue;
-			}
-		}
-	}*/
 
 	glm::vec3 moveVec = glm::normalize(movement);
-	actualSpeed = glm::length(movement);
+	actualSpeedAbs = glm::length(movement);
 
-	if (actualSpeed > 0) {
+	if (glm::dot(movement, vecFront) > 0) {
+		actualSpeed = actualSpeedAbs;
+	}
+	else {
+		actualSpeed = -actualSpeedAbs;
+	}
+
+	if (actualSpeedAbs > brakevalue) {
 		movement -= moveVec * brakevalue;
+	}
+	else if (actualSpeedAbs > 0) {
+		movement = glm::vec3(0);
 	}
 }
 
@@ -176,6 +161,30 @@ void Character::rollRight()
 	
 }
 
+void Character::brake()
+{
+	float brakevalue = backwardSidewayAccel;
+
+	//Logger::logVector(movement,"Move",2,"\033[34m");
+
+	glm::vec3 moveVec = glm::normalize(movement);
+	actualSpeedAbs = glm::length(movement);
+
+	if (glm::dot(movement, vecFront) > 0) {
+		actualSpeed = actualSpeedAbs;
+	}
+	else {
+		actualSpeed = -actualSpeedAbs;
+	}
+
+	if (actualSpeedAbs > brakevalue) {
+		movement -= moveVec * brakevalue;
+	}
+	else if (actualSpeedAbs > 0) {
+		movement = glm::vec3(0);
+	}
+}
+
 void Character::jump()
 {
 	if (canJump)
@@ -251,6 +260,8 @@ std::shared_ptr<Bullet> Character::shoot()
 {
 	float maxScatteringAngle = 1;
 
+	//Logger::info2("shoot");
+
 	float scatteringAngleX = std::rand() * maxScatteringAngle / RAND_MAX;
 	scatteringAngleX -= maxScatteringAngle / 2;
 
@@ -259,12 +270,15 @@ std::shared_ptr<Bullet> Character::shoot()
 
 	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
 	std::chrono::duration<double, std::milli> notshotDuration = now - lastTimeShot;
-	if (notshotDuration.count() > 1000)
+	if (notshotDuration.count() > shootInterval)
 	{
-		glm::vec3 bulletCreationPosition = position + glm::vec3(0, 2, 0) +glm::vec3(1, 1, 1) * getVecFront();
-		glm::vec3 bulletCreationRotation = glm::vec3(0, rotation.y - 90 + scatteringAngleY, -rotation.x - 90 + scatteringAngleX);
-		glm::vec3 bulletCreationDirection = getVecFront();
+		glm::vec3 bulletCreationPosition = position + glm::vec3(7) * vecFront;
+		//glm::vec3 bulletCreationRotation = glm::vec3(0, rotation.y - 90 + scatteringAngleY, -rotation.x - 90 + scatteringAngleX);
+		glm::vec3 bulletCreationDirection = vecFront;
 		
+		glm::quat bulletRotationquat = this->getRotationQuat();
+
+
 		//rotate direction around Y
 		bulletCreationDirection = glm::rotate(bulletCreationDirection, glm::radians(scatteringAngleY), glm::vec3(0, 1, 0));
 
@@ -272,7 +286,7 @@ std::shared_ptr<Bullet> Character::shoot()
 		bulletCreationDirection = glm::rotate(bulletCreationDirection, glm::radians(scatteringAngleX), glm::vec3(0, 0, 1));
 
 
-		std::shared_ptr<Bullet> newBullet = std::make_shared<Bullet>(shader, bulletCreationPosition, bulletCreationRotation, bulletCreationDirection);
+		std::shared_ptr<Bullet> newBullet = std::make_shared<Bullet>(shader, bulletCreationPosition, bulletRotationquat, bulletCreationDirection);
 		newBullet->setNumber(Game::objects.size());
 
 		Game::bullets.push_back(newBullet);

@@ -24,10 +24,12 @@
   <texts>
   </texts>
   <models>
-    <model>spaceship.bmf</model>
-    <model>planet_sun.bmf</model>
-	  <model>planet_earth.bmf</model>
-	  <model>planet_moon.bmf</model>
+	<model>replacemeball.bmf</model>
+  <model>spaceship.bmf</model>
+  <model>planet_sun.bmf</model>
+	<model>planet_earth.bmf</model>
+	<model>planet_moon.bmf</model>
+    <model>laser.bmf</model>
   </models>
   <objects>
     <object>
@@ -72,5 +74,20 @@
     </object>
   </objects>
   <bots>
+    <bot>
+      <name>Bot1</name>
+      <type>Bot</type>
+      <team>0</team>
+      <modelfile>spaceship.bmf</modelfile>
+      <position>10;0;10</position>
+      <rotation>0;0;0</rotation>
+      <scale>1;1;1</scale>
+      <navpoints>
+        <navpoint>200;0;10</navpoint>
+        <navpoint>150;100;200</navpoint>
+        <navpoint>150;100;0</navpoint>
+        <navpoint>100;-100;-50</navpoint>
+      </navpoints>
+    </bot>
   </bots>
 </map>

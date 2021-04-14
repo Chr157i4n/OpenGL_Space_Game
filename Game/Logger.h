@@ -15,6 +15,8 @@ public:
 
 	static void info(std::string message);
 
+	static void info2(std::string message);
+
 	static void warn(std::string message);
 
 	static void error(std::string message);

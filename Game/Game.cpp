@@ -489,7 +489,6 @@ void Game::processInput()
 				AudioManager::updateAudioListener();
 			}
 		}
-
 	}
 	if (isKeyPressed(PlayerAction::rollRight))
 	{
@@ -500,7 +499,15 @@ void Game::processInput()
 				AudioManager::updateAudioListener();
 			}
 		}
-
+	}
+	if (isKeyPressed(PlayerAction::brake))
+	{
+		if (gameState == GameState::GAME_ACTIVE || gameState == GameState::GAME_GAME_OVER)
+		{
+			if (players.size() > 0) {
+				players[0]->brake();
+			}
+		}
 	}
 	if (isKeyPressed(PlayerAction::jump))
 	{

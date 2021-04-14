@@ -1,7 +1,7 @@
 #include "Bullet.h"
 #include "Game.h"
 
-Bullet::Bullet(Shader* shader, glm::vec3 position, glm::vec3 rotation, glm::vec3 direction) : Object(shader, "arrow.bmf")
+Bullet::Bullet(Shader* shader, glm::vec3 position, glm::vec3 rotation, glm::vec3 direction) : Object(shader, "laser.bmf")
 {
 	this->setType(ObjectType::Object_Bullet);
 	this->position = position;
@@ -11,7 +11,17 @@ Bullet::Bullet(Shader* shader, glm::vec3 position, glm::vec3 rotation, glm::vec3
 	this->setCollisionBoxType(CollisionBoxType::cube);
 }
 
-Bullet::Bullet(Shader* shader) : Object(shader, "arrow.bmf")
+Bullet::Bullet(Shader* shader, glm::vec3 position, glm::quat rotation, glm::vec3 direction) : Object(shader, "laser.bmf")
+{
+	this->setType(ObjectType::Object_Bullet);
+	this->position = position;
+	this->setRotationQuat(rotation);
+	this->movement = glm::normalize(direction) * speed;// *Game::getDelta(); //todo : apply Game::getDelta() per frame
+	this->name = "Bullet";
+	this->setCollisionBoxType(CollisionBoxType::cube);
+}
+
+Bullet::Bullet(Shader* shader) : Object(shader, "laser.bmf")
 {
 	this->setType(ObjectType::Object_Bullet);
 	this->name = "Bullet";
@@ -23,7 +33,7 @@ void Bullet::fall()
 	this->Object::fall();
 
 	if (movement == glm::vec3(0, 0, 0)) return;
-	if (position.y < 0.5) { movement=glm::vec3(0, 0, 0); return; }
+	//if (position.y < 0.5) { movement=glm::vec3(0, 0, 0); return; }
 
 
 	float gegk = movement.y;

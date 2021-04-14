@@ -42,6 +42,8 @@ public:
 
 	void rollRight();
 
+	void brake();
+
 	void jump();
 
 	void activateJumping();
@@ -88,17 +90,18 @@ protected:
 	
 
 	float32 maxSpeed = 60;
-	float32 forwardAccel = 0.1f;				//per second
-	float32 backwardSidewayAccel = 0.04f;		//per second
+	float32 forwardAccel = 0.05f;				//per second
+	float32 backwardSidewayAccel = 0.03f;		//per second
 	float32 upwardAccel = 0.04f;				//per second
 	float32 rollSpeed = 0.1f;
 
 	float32 actualSpeed = 0;
+	float32 actualSpeedAbs = 0;
 
 	const float32 heigth = 4;
 
 	std::chrono::system_clock::time_point lastTimeShot = std::chrono::system_clock::now() - std::chrono::hours(1);
-
+	float32 shootInterval = 100;
 	
 
 	int team = 0;

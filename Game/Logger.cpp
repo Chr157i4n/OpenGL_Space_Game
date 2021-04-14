@@ -6,6 +6,11 @@ void Logger::info(std::string message)
 	std::cout << getTime() << message << std::endl;
 }
 
+void Logger::info2(std::string message)
+{
+	std::cout << "\033[34m" << getTime() << message << "\033[0m" << std::endl;
+}
+
 void Logger::warn(std::string message)
 {
 	std::cout << "\033[33m" << getTime() << message << "\033[0m" << std::endl;

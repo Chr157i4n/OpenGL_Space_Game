@@ -8,6 +8,8 @@ class Bullet : public Object
 public:
 	Bullet(Shader* shader, glm::vec3 position, glm::vec3 rotation, glm::vec3 direction);
 
+	Bullet(Shader* shader, glm::vec3 position, glm::quat rotation, glm::vec3 direction);
+
 	Bullet(Shader* shader);
 
 	//void move();
@@ -21,7 +23,7 @@ public:
 
 private:
 
-	float speed = 70;
+	float speed = 200;
 
 };
 

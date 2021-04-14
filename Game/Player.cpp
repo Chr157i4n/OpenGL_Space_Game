@@ -24,17 +24,30 @@ Player::Player(Shader* shader, float fov, float width, float height) : Character
 }
 
 
+void Player::calculationBeforeFrame()
+{
+	this->Character::calculationBeforeFrame();
+}
+
+void Player::calculationAfterFrame()
+{
+	this->Character::calculationAfterFrame();
+
+	MouseMoved = false;
+}
+
 void Player::onMouseMove(float xRel, float yRel)
 {
+	MouseMoved = true;
 
 	//Logger::log("vecRight: ("+std::to_string(vecRight.x)+"|" + std::to_string(vecRight.y) + "|" + std::to_string(vecRight.z) + ")");
 	//Logger::log("quat: (" + std::to_string(rotationQuat.x) + "|" + std::to_string(rotationQuat.y) + "|" + std::to_string(rotationQuat.z) + "|" + std::to_string(rotationQuat.w) + ")");
 	
-	float maxPitch=0.003f;
-	float maxYaw = 0.003f;
+	maxPitch=0.003f;
+	maxYaw = 0.003f;
 
-	float anglePitch = glm::radians(yRel * mouseSensitivity);
-	float angleYaw = glm::radians(-xRel * mouseSensitivity);
+	float32 anglePitch = glm::radians(yRel * mouseSensitivity);
+	float32 angleYaw = glm::radians(-xRel * mouseSensitivity);
 	anglePitch = std::min(anglePitch, maxPitch);
 	angleYaw = std::min(angleYaw, maxYaw);
 	anglePitch = std::max(anglePitch, -maxPitch);
@@ -56,36 +69,44 @@ void Player::onMouseMove(float xRel, float yRel)
 
 	setRotationQuat(rotationQuat);
 	
-
+	updateAngleAroundCharacter(-angleYaw * 2000, 10 + anglePitch * 2000);
+	
 
 
 	//onMouseMoved();
 
 	//calculateFrontandUpVector();
-	lookAt = vecFront;
-	updateCameraPosition();
+	//lookAt = vecFront;
+	//updateCameraPosition();
+
+
 }
 
 void Player::updateCameraPosition()
 {
-	float cameraspeed = 0.1;
-
-	glm::vec3 cameratargetposition = position - getVecFront() * camera_distancetoPlayer;
-	cameratargetposition += getVecUp() * glm::vec3(2);
-
-	glm::vec3 cameramovedirection = cameratargetposition - cameraposition;
-	float cameratargetdistance = glm::length(cameramovedirection);
-	cameramovedirection = glm::normalize(cameramovedirection);
-
-	if (cameratargetdistance > cameraspeed) {
-		cameraposition += cameramovedirection * glm::vec3(cameraspeed);
-	}
-	else {
-		cameraposition = cameratargetposition;
+	if (!MouseMoved) {
+		updateAngleAroundCharacter(0, 10);
 	}
 
-	lookAt = vecFront;
+	float horizDistance		= cos(glm::radians(pitchAroundCharacter)) * camera_distancetoPlayer;
+	float verticDistance	= sin(glm::radians(pitchAroundCharacter)) * camera_distancetoPlayer;
+
+	float offsetX = cos(glm::radians(yawAroundCharacter)) * horizDistance;
+	float offsetY = verticDistance;
+	float offsetZ = sin(glm::radians(yawAroundCharacter)) * horizDistance;
+
+	cameraposition = position;
+	cameraposition += (offsetX+actualSpeed*0.01f) * -vecFront;
+	cameraposition += offsetY * vecUp;
+	cameraposition += offsetZ * vecRight;
+
+	lookAt = glm::normalize((position + (vecFront * 400.0f))- cameraposition);
+
+
 	update2(vecUp);
+
+	//anglePitch = 0;
+	//angleYaw = 0;
 }
 
 void Player::resetCameraPosition()
@@ -102,6 +123,29 @@ void Player::resetCameraPosition()
 glm::vec3 Player::getCameraPosition()
 {
 	return cameraposition;
+}
+
+void Player::updateAngleAroundCharacter(float targetYawAroundCharacter, float targetPitchAroundCharacter)
+{
+	if (yawAroundCharacter < targetYawAroundCharacter - cameraAroundCharacterSpeed) {
+		yawAroundCharacter += cameraAroundCharacterSpeed;
+	}
+	else if (yawAroundCharacter > targetYawAroundCharacter + cameraAroundCharacterSpeed) {
+		yawAroundCharacter -= cameraAroundCharacterSpeed;
+	}
+	else {
+		yawAroundCharacter = targetYawAroundCharacter;
+	}
+
+	if (pitchAroundCharacter < targetPitchAroundCharacter - cameraAroundCharacterSpeed) {
+		pitchAroundCharacter += cameraAroundCharacterSpeed;
+	}
+	else if (pitchAroundCharacter > targetPitchAroundCharacter + cameraAroundCharacterSpeed) {
+		pitchAroundCharacter -= cameraAroundCharacterSpeed;
+	}
+	else {
+		pitchAroundCharacter = targetPitchAroundCharacter;
+	}
 }
 
 void Player::setCameraPosition(glm::vec3 newPosition)
@@ -159,13 +203,13 @@ void Player::registerHit()
 void Player::rollLeft()
 {
 	Character::rollLeft();
-	updateCameraPosition();
+	//updateCameraPosition();
 }
 
 void Player::rollRight()
 {
 	Character::rollRight();
-	updateCameraPosition();
+	//updateCameraPosition();
 }
 
 void Player::reactToCollision(CollisionResult collisionResult)
@@ -182,14 +226,14 @@ void Player::createUIElements()
 	UI::addElement(prb_health);
 
 
-	prb_PlayerSpeed = new UI_Element_ProgressBar(120, 10, 100, 20, 0, 0);
+	prb_PlayerSpeed = new UI_Element_ProgressBar(125, 10, 100, 20, 0, 0);
 	prb_PlayerSpeed->setForeColor(glm::vec4(0, 0.5, 1, 0.5));
 	prb_PlayerSpeed->setBackColor(glm::vec4(0.2, 0.2, 0.2, 0.4));
-	prb_PlayerSpeed->setValue(actualSpeed);
+	prb_PlayerSpeed->setValue(actualSpeedAbs);
 	prb_PlayerSpeed->setMaxValue(maxSpeed);
 	UI::addElement(prb_PlayerSpeed);
 
-	lbl_PlayerSpeed = new UI_Element_Label(120, 40, 100, 50, "0.00", 0, 1, glm::vec4(0, 0.5, 1, 0.5), glm::vec4(0.2, 0.2, 0.2, 0.4));
+	lbl_PlayerSpeed = new UI_Element_Label(125, 40, 100, 50, "0.00", 0, 1, glm::vec4(0, 0.5, 1, 0.5), glm::vec4(0.2, 0.2, 0.2, 0.4));
 	UI::addElement(lbl_PlayerSpeed);
 }
 
@@ -232,7 +276,7 @@ void Player::move()
 {
 	this->Object::move();
 
-	prb_PlayerSpeed->setValue(actualSpeed);
+	prb_PlayerSpeed->setValue(actualSpeedAbs);
 	lbl_PlayerSpeed->setText(Helper::to_string_with_precision(actualSpeed,2));
 
 	if (movement != glm::vec3(0, 0, 0))

@@ -145,9 +145,9 @@ public:
 
 	virtual void reactToCollision(CollisionResult collisionResult);
 
-	void calculationBeforeFrame();
+	virtual void calculationBeforeFrame();
 
-	void calculationAfterFrame();
+	virtual void calculationAfterFrame();
 
 	glm::vec3 calculateDimensions();
 
