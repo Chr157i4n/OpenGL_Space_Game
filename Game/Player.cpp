@@ -4,6 +4,7 @@
 #include "Bullet.h"
 #include "Shader.h"
 
+
 Player::Player(Shader* shader, float fov, float width, float height) : Character(shader), ThirdPersonCamera(fov, width, height)
 {
 	setType(ObjectType::Object_Player | ObjectType::Object_Character);
@@ -18,7 +19,7 @@ Player::Player(Shader* shader, float fov, float width, float height) : Character
 	lookAt = vecFront;
 	resetCameraPosition();
 
-	this->name = "Player";
+	name = "Player";
 
 	createUIElements();
 }
@@ -86,6 +87,7 @@ void Player::updateCameraPosition()
 {
 	if (!MouseMoved) {
 		updateAngleAroundCharacter(0, 10);
+		//updateAngleAroundCharacter(Game::getTimeStamp()*0.01, 10);
 	}
 
 	float horizDistance		= cos(glm::radians(pitchAroundCharacter)) * camera_distancetoPlayer;
@@ -96,9 +98,13 @@ void Player::updateCameraPosition()
 	float offsetZ = sin(glm::radians(yawAroundCharacter)) * horizDistance;
 
 	cameraposition = position;
-	cameraposition += (offsetX+actualSpeed*0.01f) * -vecFront;
+	cameraposition += offsetX * -vecFront;
 	cameraposition += offsetY * vecUp;
 	cameraposition += offsetZ * vecRight;
+
+	if (glm::length(movement) > 0) {
+		cameraposition += actualSpeedAbs * 0.02f * -glm::normalize(movement);
+	}
 
 	lookAt = glm::normalize((position + (vecFront * 400.0f))- cameraposition);
 

@@ -29,6 +29,8 @@
   <model>planet_sun.bmf</model>
 	<model>planet_earth.bmf</model>
 	<model>planet_moon.bmf</model>
+  <model>planet_mars.bmf</model>
+  <model>planet_jupiter.bmf</model>
     <model>laser.bmf</model>
   </models>
   <objects>
@@ -50,16 +52,25 @@
       <modelfile>planet_sun.bmf</modelfile>
       <position>0;0;0</position>
       <rotation>0;0;0</rotation>
+      <con_self_rotation_axis>0;1;0</con_self_rotation_axis>
+      <con_self_rotation_speed>-0.0001</con_self_rotation_speed>
+      <con_parent_rotation_axis>0;1;0</con_parent_rotation_axis>
+      <con_parent_rotation_speed>0</con_parent_rotation_speed>
       <scale>1;1;1</scale>
-    </object>
+  </object>
 	    <object>
       <name>Earth</name>
       <type>Environment</type>
       <collisionboxtype>sphere</collisionboxtype>
       <gravity>false</gravity>
       <modelfile>planet_earth.bmf</modelfile>
+      <parent>Sun</parent>
       <position>100;0;0</position>
       <rotation>0;0;0</rotation>
+      <con_self_rotation_axis>0;1;0</con_self_rotation_axis>
+      <con_self_rotation_speed>0.0003</con_self_rotation_speed>
+      <con_parent_rotation_axis>0;1;0</con_parent_rotation_axis>
+      <con_parent_rotation_speed>1</con_parent_rotation_speed>
       <scale>1;1;1</scale>
     </object>
 	    <object>
@@ -68,8 +79,43 @@
       <collisionboxtype>sphere</collisionboxtype>
       <gravity>false</gravity>
       <modelfile>planet_moon.bmf</modelfile>
-      <position>110;0;20</position>
+      <parent>Earth</parent>
+      <position>120;0;20</position>
       <rotation>0;0;0</rotation>
+      <con_self_rotation_axis>1;1;0</con_self_rotation_axis>
+      <con_self_rotation_speed>-0.0001</con_self_rotation_speed>
+      <con_parent_rotation_axis>0;1;0</con_parent_rotation_axis>
+      <con_parent_rotation_speed>-5</con_parent_rotation_speed>
+      <scale>1;1;1</scale>
+    </object>
+    <object>
+      <name>Mars</name>
+      <type>Environment</type>
+      <collisionboxtype>sphere</collisionboxtype>
+      <gravity>false</gravity>
+      <modelfile>planet_mars.bmf</modelfile>
+      <parent>Sun</parent>
+      <position>200;0;0</position>
+      <rotation>0;0;0</rotation>
+      <con_self_rotation_axis>0;1;0</con_self_rotation_axis>
+      <con_self_rotation_speed>0.0004</con_self_rotation_speed>
+      <con_parent_rotation_axis>0;1;0</con_parent_rotation_axis>
+      <con_parent_rotation_speed>1.4</con_parent_rotation_speed>
+      <scale>1;1;1</scale>
+    </object>
+    <object>
+      <name>Jupiter</name>
+      <type>Environment</type>
+      <collisionboxtype>sphere</collisionboxtype>
+      <gravity>false</gravity>
+      <modelfile>planet_jupiter.bmf</modelfile>
+      <parent>Sun</parent>
+      <position>1000;0;0</position>
+      <rotation>0;0;0</rotation>
+      <con_self_rotation_axis>0;1;0</con_self_rotation_axis>
+      <con_self_rotation_speed>0.0002</con_self_rotation_speed>
+      <con_parent_rotation_axis>0;1;0</con_parent_rotation_axis>
+      <con_parent_rotation_speed>0.2</con_parent_rotation_speed>
       <scale>1;1;1</scale>
     </object>
   </objects>

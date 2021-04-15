@@ -113,13 +113,13 @@ void GameMode_MapEditor::gameLoop()
 			for (std::shared_ptr<Character> character : Game::characters)
 			{
 				if (!character->getEnabled()) continue;
-				character->resetVerticalMovement();
+				character->resetMovement();
 			}
 		}
 		else
 		{
 			if (!Game::players[0]->getEnabled()) return;
-			Game::players[0]->resetVerticalMovement();
+			Game::players[0]->resetMovement();
 		}
 
 		//Deactivate Objects if Health <= 0

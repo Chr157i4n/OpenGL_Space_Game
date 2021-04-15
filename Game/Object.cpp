@@ -23,10 +23,18 @@ Object::Object(Shader* shader, std::string modelFileName)
 	movement = glm::vec3(0, 0, 0);
 	dimensions = glm::vec3(2, 2, 2);
 
+	conSelfRotationAxis = glm::vec3(0,0,0);
+	conSelfRotationSpeed = 0;
+
+	conParentRotationAxis = glm::vec3(0, 0, 0);
+	conParentRotationSpeed = 0;
+
+	distanceToParent = 0;
+
 	setRotationQuat(rotation);
 
 	this->shader = shader;
-	this->model = ResourceManager::getModelByName(modelFileName);
+	model = ResourceManager::getModelByName(modelFileName);
 
 
 	dimensions = calculateDimensions();
@@ -37,9 +45,9 @@ Object::Object(Shader* shader, std::string modelFileName)
 	center = position;
 	center.y += dimensions.y / 2;
 
-	this->name = "Object";
+	name = "Object";
 
-	this->setGravity(true);
+	setGravity(true);
 }
 
 Shader* Object::getShader()
@@ -178,6 +186,7 @@ CollisionResult Object::checkCollision()
 		if (object->getNumber() == this->getNumber()) continue;		//dont check collision with yourself
 		if (object->getType() & ObjectType::Object_Bullet) continue;	//bullets move faster than everything else, so only bullets need to check collision wiht other objects
 		if (object->getCollisionBoxType() == CollisionBoxType::none) continue;	//if the object has "none" collision box, no collision should be checked
+		if (object->getType() & ObjectType::Object_Environment) continue;
 
 		if (checkCollision_AABB(object))
 		{
@@ -704,7 +713,43 @@ void Object::fall()
 
 void Object::move()
 {
+	if (distanceToParent == 0 && parent != NULL) {
+		glm::vec3 vecFromParent = getPosition() - parent->getPosition();
+		distanceToParent = glm::length(vecFromParent);
+	}
+
+
+	if (parent != NULL) {
+		glm::vec3 vecFromParent = getPosition() - parent->getPosition();
+		vecFromParent = glm::normalize(vecFromParent);
+
+		if (conParentRotationSpeed != 0 && conParentRotationAxis != glm::vec3(0, 0, 0)) {
+			glm::vec3 newVecToParent = glm::normalize(glm::rotate(vecFromParent, glm::radians(conParentRotationSpeed), conParentRotationAxis));
+			glm::vec3 newPosition = newVecToParent * distanceToParent + parent->getPosition();
+			movement += (newPosition - position);
+
+			//Logger::info2(Helper::to_string_with_precision(distanceToParent,2));
+		}
+	}
+
 	//checkBoundaries();
+	if (conSelfRotationSpeed != 0 && conSelfRotationAxis != glm::vec3(0, 0, 0)) {
+		rotationQuat = glm::rotate(rotationQuat, conSelfRotationSpeed, conSelfRotationAxis);
+		setRotationQuat(rotationQuat);
+	}
+
+	if (this->getName() == "Earth") {
+		//Logger::logVector(this->getPosition(), "Earth");
+		//Logger::logVector(this->getMovement(), "Earth");
+	}
+
+	if (movement != glm::vec3(0, 0, 0)) {
+
+		for (std::shared_ptr<Object> object : childs)
+		{
+			object->addToMovement(movement);
+		}
+	}
 
 	position += movement * Game::getDelta() * 0.001f;
 
@@ -846,6 +891,11 @@ bool Object::isGettingDamaged()
 	{
 		return true;
 	}
+}
+
+void Object::resetMovement()
+{
+	movement = glm::vec3(0, 0, 0);
 }
 
 void Object::setHealth(float32 newHealth)

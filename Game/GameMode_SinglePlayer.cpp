@@ -56,7 +56,7 @@ void GameMode_SinglePlayer::gameLoop()
 		{
 			if (NetworkManager::getIsConnected() && !(object->getType() & ObjectType::Object_Player)) continue;
 			if (!object->getEnabled()) continue;
-			if (object->getType() & ObjectType::Object_Environment) continue; //Environment doesnt move
+			//if (object->getType() & ObjectType::Object_Environment) continue; //Environment doesnt move
 
 			object->fall();
 			object->move();
@@ -96,10 +96,10 @@ void GameMode_SinglePlayer::gameLoop()
 
 		//Reset Vertical Movement
 
-			for (std::shared_ptr<Character> character : Game::characters)
+			for (std::shared_ptr<Object> object : Game::objects)
 			{
-				if (!character->getEnabled()) continue;
-				character->resetVerticalMovement();
+				if (!object->getEnabled()) continue;
+				object->resetMovement();
 			}
 
 

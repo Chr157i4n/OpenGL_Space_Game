@@ -90,7 +90,7 @@ void GameMode_MultiPlayer::gameLoop()
 		//Reset Vertical Movement
 		if (Game::players.size() > 0) {
 			if (!Game::players[0]->getEnabled()) return;
-			Game::players[0]->resetVerticalMovement();
+			Game::players[0]->resetMovement();
 		}
 
 		//UI Output

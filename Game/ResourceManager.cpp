@@ -227,6 +227,7 @@ void ResourceManager::loadMap(std::string mapFileName)
 	}
 	Logger::info("Loading all Objects - finished");
 
+	setChildsAndParents();
 
 
 	Logger::info("Loading all NPCs");
@@ -408,7 +409,32 @@ void ResourceManager::loadObject(tinyxml2::XMLElement* xmlNode, int objectCount)
 	newObject->setPosition(Helper::string_to_glmVec3(xmlNodeText));
 
 	xmlNodeText = xmlNode->FirstChildElement("rotation")->GetText();
-	newObject->setRotation(Helper::string_to_glmVec3(xmlNodeText));
+	//newObject->setRotation(Helper::string_to_glmVec3(xmlNodeText));
+	newObject->setRotationQuat(Helper::string_to_glmVec3(xmlNodeText));
+
+	if (xmlNode->FirstChildElement("con_self_rotation_axis") && xmlNode->FirstChildElement("con_self_rotation_speed"))
+	{
+		xmlNodeText = xmlNode->FirstChildElement("con_self_rotation_axis")->GetText();
+		newObject->setConSelfRotationAxis(Helper::string_to_glmVec3(xmlNodeText));
+
+		xmlNodeText = xmlNode->FirstChildElement("con_self_rotation_speed")->GetText();
+		newObject->setConSelfRotationSpeed(stof(xmlNodeText));
+	}
+
+	if (xmlNode->FirstChildElement("con_parent_rotation_axis") && xmlNode->FirstChildElement("con_parent_rotation_speed"))
+	{
+		xmlNodeText = xmlNode->FirstChildElement("con_parent_rotation_axis")->GetText();
+		newObject->setConParentRotationAxis(Helper::string_to_glmVec3(xmlNodeText));
+
+		xmlNodeText = xmlNode->FirstChildElement("con_parent_rotation_speed")->GetText();
+		newObject->setConParentRotationSpeed(stof(xmlNodeText));
+	}
+
+	if (xmlNode->FirstChildElement("parent"))
+	{
+		xmlNodeText = xmlNode->FirstChildElement("parent")->GetText();
+		newObject->setParentName(xmlNodeText);
+	}
 
 	xmlNodeText = xmlNode->FirstChildElement("scale")->GetText();
 	newObject->setScale(Helper::string_to_glmVec3(xmlNodeText));
@@ -711,4 +737,20 @@ int ResourceManager::loadImage(std::string fileName)
 	GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
 	return textureID;
+}
+
+void ResourceManager::setChildsAndParents()
+{
+	for (std::shared_ptr<Object> object : Game::objects) {
+		if (object->getParentName() == "") continue;
+
+		for (std::shared_ptr<Object> objectparent : Game::objects) {
+			if (objectparent->getName() == object->getParentName()) {
+
+				objectparent->childs.push_back(object);
+				object->parent = objectparent;
+
+			}
+		}
+	}
 }

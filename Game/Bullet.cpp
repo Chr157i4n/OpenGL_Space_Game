@@ -75,3 +75,7 @@ void Bullet::registerHit()
 {
 	this->health = 0;
 }
+
+void Bullet::resetMovement()
+{
+}

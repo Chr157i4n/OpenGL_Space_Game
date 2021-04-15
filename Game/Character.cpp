@@ -55,7 +55,7 @@ void Character::interactWithObject()
 	}
 }
 
-void Character::resetVerticalMovement()
+void Character::resetMovement()
 {
 	float brakevalue = 0.001f;
 	brakevalue *= glm::length(movement);

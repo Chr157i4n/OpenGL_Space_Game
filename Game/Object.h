@@ -361,6 +361,66 @@ public:
 		return markColor;
 	}
 
+	glm::vec3 getConSelfRotationAxis()
+	{
+		return conSelfRotationAxis;
+	}
+
+	void setConSelfRotationAxis(glm::vec3 conSelfRotationAxis)
+	{
+		this->conSelfRotationAxis = conSelfRotationAxis;
+	}
+
+	float32 getConSelfRotationSpeed()
+	{
+		return conSelfRotationSpeed;
+	}
+
+	void setConSelfRotationSpeed(float32 conSelfRotationSpeed)
+	{
+		this->conSelfRotationSpeed = conSelfRotationSpeed;
+	}
+
+	glm::vec3 getConParentRotationAxis()
+	{
+		return conParentRotationAxis;
+	}
+
+	void setConParentRotationAxis(glm::vec3 conParentRotationAxis)
+	{
+		this->conParentRotationAxis = conParentRotationAxis;
+	}
+
+	float32 getConParentRotationSpeed()
+	{
+		return conParentRotationSpeed;
+	}
+
+	void setConParentRotationSpeed(float32 conParentRotationSpeed)
+	{
+		this->conParentRotationSpeed = conParentRotationSpeed;
+	}
+
+	std::string getParentName()
+	{
+		return parentName;
+	}
+
+	void setParentName(std::string parentName)
+	{
+		this->parentName = parentName;
+	}
+
+	void addToMovement(glm::vec3 movement)
+	{
+		this->movement += movement;
+	}
+
+	virtual void resetMovement();
+
+	std::shared_ptr<Object> parent;
+	std::vector<std::shared_ptr<Object>> childs;
+
 protected:
 
 	glm::vec3 position;						//x, y, z
@@ -376,6 +436,16 @@ protected:
 	std::vector<glm::vec3> cubeNormals;
 
 	Box orientedBoundingBox;
+
+	glm::vec3 conSelfRotationAxis;
+	float32 conSelfRotationSpeed;
+
+	glm::vec3 conParentRotationAxis;
+	float32 conParentRotationSpeed;
+	float32 distanceToParent;
+
+	std::string parentName;
+
 
 	int modelIndex = -1;
 	Shader* shader = nullptr;
@@ -397,7 +467,7 @@ protected:
 	std::chrono::system_clock::time_point lastHitTimestamp = std::chrono::system_clock::now() - std::chrono::hours(1);
 	std::chrono::system_clock::time_point lastMarkTimestamp = std::chrono::system_clock::now() - std::chrono::hours(1);
 	glm::vec3 markColor = glm::vec3(0.1, 0.1, 0);
-	float markDuration = 10;
+	float32 markDuration = 10;
 
 	int envCubeMap=-1, envCubeMapFrameBuffer=-1, envCubeMapDepthBuffer = -1;
 

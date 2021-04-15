@@ -20,6 +20,8 @@ public:
 
 	virtual void registerHit();
 
+	void resetMovement();
+
 
 private:
 

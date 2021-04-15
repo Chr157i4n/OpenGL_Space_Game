@@ -24,7 +24,7 @@ public:
 
 	virtual void interactWithObject();
 
-	void resetVerticalMovement();
+	void resetMovement();
 
 	void moveForward();
 

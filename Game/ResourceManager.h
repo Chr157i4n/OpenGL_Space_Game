@@ -63,6 +63,7 @@ public:
 
 private:
 
+	static void setChildsAndParents();
 	
 	static std::string modelFolder;
 	static float percentageLoading;

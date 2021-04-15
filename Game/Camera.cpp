@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera(float fov, float width, float height) {
-    proj = glm::perspective(fov/2, width / height, 0.1f, 1000.0f);
+    proj = glm::perspective(fov/2, width / height, 0.1f, 10000.0f);
    // proj = glm::ortho(-10.0f, 10.0f, -5.0f, 5.0f, 0.1f, 1000.0f);
     view = glm::mat4(1.0f);
     cameraposition = glm::vec3(0.0f);
